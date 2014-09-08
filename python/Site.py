@@ -1,6 +1,6 @@
 ############################################################
 #
-# Class Site
+# Site.py
 #
 # Used to package up site information and operations
 #
@@ -22,3 +22,20 @@ class Site:
 
     def bandwidthPerCore( self ):
         return self.bandwidth / self.cores
+
+class Batch:
+    """Represents a batch system with jobs"""
+    def __init__(self):
+        self.jobs=[]
+
+    def addJob( self, job ):
+        self.jobs.append( job )
+
+    def totalIdealBandwidth( self ):
+        total=0
+        for job in self.jobs:
+            total+=job.dataToRead()/job.cpuTime
+        return total
+
+    def numberOfJobs( self ):
+        return len( self.jobs )
