@@ -1,0 +1,4 @@
+# Site Name	Disk Space (TB)	Cores		Internal Bandwidth (MB/s)
+T0_CH_CERN	10000		20000		80000
+T1_UK_RAL	5000		3000		10000
+T1_US_FNAL	5000		3000		20000

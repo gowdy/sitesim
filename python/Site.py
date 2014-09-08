@@ -11,10 +11,10 @@
 class Site:
     """A representation of a Site"""
     def __init__( self, name, disk, cores, bandwidth):
-        self.name = name
-        self.disk = disk
-        self.cores = cores
-        self.bandwidth = bandwidth
+        self.name = name # string name
+        self.disk = disk # size in TB
+        self.cores = cores # number of
+        self.bandwidth = bandwidth # MB/s
         self.network = []
 
     def addLink( self, otherSite, bandwidth, latency ):        
