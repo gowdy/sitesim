@@ -10,6 +10,8 @@
 
 class Site:
     """A representation of a Site"""
+    sites=[] # all the sites
+
     def __init__( self, name, disk, cores, bandwidth):
         self.name = name # string name
         self.disk = disk # size in TB
@@ -18,7 +20,7 @@ class Site:
         self.network = []
 
     def addLink( self, otherSite, bandwidth, latency ):        
-        self.network.append( {otherSite, bandwidth, latency } )
+        self.network.append( [otherSite, bandwidth, latency ] )
 
     def bandwidthPerCore( self ):
         return self.bandwidth / self.cores
