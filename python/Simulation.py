@@ -30,9 +30,6 @@ def setupSimulation():
             continue
         ( fromSite, toSite, bandwidth, latency ) = line.split()
         addNetwork( Site.Site.sites, fromSite, toSite, bandwidth, latency )
-    for site in Site.Site.sites:
-        print site.name, site.network
-
 
 def addNetwork( siteList, fromSite, toSite, bandwidth, latency ):
     addTo = False
@@ -50,6 +47,20 @@ def addNetwork( siteList, fromSite, toSite, bandwidth, latency ):
         raise Usage( "Link not added for from site: %s %s" % (site.name, fromSite ) )
     
 
+def runSimulation():
+    for site in Site.Site.sites:
+        print site.name, site.network
+    theStore = Data.EventStore()
+
+    theJobs = []
+    jobsFile = open( "input/Jobs.txt", 'r' )
+    for line in jobsFile:
+        if line[0]=='#':
+            continue
+        ( site, cpuTime, lfn, percentageRead ) = line.split()
+        theJobs.append( Job.Job( lfn, percentageRead, cpuTime ) )
+
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv
@@ -59,6 +70,7 @@ def main(argv=None):
         except getopt.error, msg:
              raise Usage(msg)
         setupSimulation()
+        runSimulation()
     except Usage, err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"

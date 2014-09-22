@@ -1,0 +1,2 @@
+# Site		CPUtime		File	PercRead
+T0_CH_CERN	300		/store/1	10
