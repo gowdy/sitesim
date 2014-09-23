@@ -17,3 +17,7 @@ class Job:
             total+=file.size
         return total*self.fractionRead
 
+    def dump( self ):
+        print "Job: %s(%s%%) %ss" % ( self.inputData, self.fractionRead,
+                                      self.cpuTime )
+

@@ -18,12 +18,16 @@ class Site:
         self.cores = cores # number of
         self.bandwidth = bandwidth # MB/s
         self.network = []
+        self.batch = Batch()
 
     def addLink( self, otherSite, bandwidth, latency ):        
         self.network.append( [otherSite, bandwidth, latency ] )
 
     def bandwidthPerCore( self ):
         return self.bandwidth / self.cores
+
+    def submit( self, job ):
+        return self.batch.addJob( job )
 
 class Batch:
     """Represents a batch system with jobs"""

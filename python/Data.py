@@ -6,14 +6,22 @@ class CMSFile:
 class EventStore:
     def __init__( self ):
         self.catalogue = {}
-    def addFile( self, site, lfn ):
-        self.catalogue.append( [ site, lfn ] )
+        self.files = []
+    def addFile( self, lfn, size ):
+        self.files.append( (lfn, size ) )
+        self.catalogue[ lfn ] = []
+    def addSite( self, lfn, site ):
+        self.catalogue[ lfn ].append( site  )
     def size( self ):
         return len( self.catalogue )
-    def removeFile( self, site, lfn ):
-        self.catalogue.remove( [ site, lfn ] )
-    def findFile( self, lfnToFind ):
-        sites = []
-        for (site, lfn) in self.catalogue:
+    def sizeOf( self, lfnToFind ):
+        for (lfn,size) in self.files:
             if lfn==lfnToFind:
-                sites.append( site )
+                return size
+    def removeFile( self, site, lfn ):
+        self.catalogue[ lfn ].remove( site )
+    def findFile( self, lfnToFind ):
+        return self.catalogue( lfnToFind )
+    def dump( self ):
+        for ( lfn, sites ) in self.catalogue.items():
+            print "%s: %s" % ( lfn, sites )
