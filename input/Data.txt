@@ -1,0 +1,3 @@
+#! LFN		Size
+/store/1	1000
+/store/2	10000
