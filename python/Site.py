@@ -37,8 +37,8 @@ class Site:
         ( self.batch.numberOfQueuedJobs(),
           self.batch.numberOfRunningJobs(),
           self.batch.numberOfDoneJobs() )
-        for ( job, start, actual ) in self.batch.dJobs:
-            print "Job: cputime %d actual time %d" % ( job.cpuTime, actual )
+        for job in self.batch.dJobs:
+            print "Job: cputime %d actual time %d" % ( job.cpuTime, job.endTime - job.startTime )
 
 class Batch:
     """Represents a batch system with jobs"""
@@ -57,21 +57,23 @@ class Batch:
                 return
 
     def checkIfJobsFinished( self, timeNow ):
-        for ( job, startTime ) in self.rJobs:
-            if job.cpuTime < ( timeNow - startTime ):
+        for job in self.rJobs:
+            if job.cpuTime < ( timeNow - job.startTime ):
                 # job is done FIXME: add data information
-                self.endJob( job, startTime, job.cpuTime )
+                job.endTime = job.startTime + job.cpuTime
+                self.endJob( job )
 
     def addJob( self, job ):
         self.qJobs.append( job )
 
     def runJob( self, job, time ):
-        self.rJobs.append( [ job, time ] )
+        job.startTime = time
+        self.rJobs.append( job )
         self.qJobs.remove( job )
 
-    def endJob( self, job, startTime, endTime ):
-        self.rJobs.remove( [ job, startTime ] )
-        self.dJobs.append( [ job, startTime, endTime ] )
+    def endJob( self, job ):
+        self.rJobs.remove( job )
+        self.dJobs.append( job )
 
     def totalIdealBandwidth( self ):
         total=0
