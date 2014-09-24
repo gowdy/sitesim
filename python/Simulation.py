@@ -77,16 +77,26 @@ def runSimulation( theStore ):
     for line in jobsFile:
         if line[0]=='#':
             continue
-        ( site, cpuTime, lfn, percentageRead ) = line.split()
-        theJob = Job.Job( lfn, percentageRead, cpuTime )
+        ( site, startTimeS, cpuTimeS, lfns, percentageReadS ) = line.split()
+        startTime = int( startTimeS )
+        cpuTime = int( cpuTimeS )
+        percentageRead = int( percentageReadS )
+        theJob = Job.Job( lfns.split( ',' ), percentageRead, cpuTime )
         for theSite in Site.Site.sites:
             if theSite.name == site:
                 theSite.submit( theJob )
-
+            theSite.pollSite( startTime )
+        for site in Site.Site.sites:
+            print "%s: %d %d %d" % ( site.name,
+                                     site.batch.numberOfQueuedJobs(),
+                                     site.batch.numberOfRunningJobs(),
+                                     site.batch.numberOfDoneJobs() )
     jobsFile.close()
 
+def printResults():
     for site in Site.Site.sites:
-        print "%s: %d" % ( site.name, site.batch.numberOfJobs() )
+        print site.name, site.network
+        site.jobSummary()
 
 def main(argv=None):
     if argv is None:
@@ -99,6 +109,7 @@ def main(argv=None):
         theStore = Data.EventStore()
         setupSimulation( theStore )
         runSimulation( theStore )
+        printResults()
     except Usage, err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"
