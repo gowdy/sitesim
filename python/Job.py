@@ -19,7 +19,7 @@ class Job:
     def dataToRead( self ):
         total=0
         for file in self.inputData:
-            total+=file.size
+            total+=self.theStore.sizeOf( file )
         return total*self.fractionRead
 
 

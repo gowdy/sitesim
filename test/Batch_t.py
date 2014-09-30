@@ -5,12 +5,18 @@ import Job
 
 class Batch_t(unittest.TestCase):
     def setUp(self):
-        self.system = Site.Batch()
-        file1 = Data.CMSFile( "/store/data/1", 10000 )
-        file2 = Data.CMSFile( "/store/data/2", 20000 )
+        cores = 3000
+        bandwidth = 3000
+        self.system = Site.Batch( cores, bandwidth )
+        file1 = "/store/data/1"
+        file2 = "/store/data/2"
+        theStore = Data.EventStore()
+        theStore.addFile( file1, 10000 )
+        theStore.addFile( file2, 20000 )
         inputData = { file1, file2 }
-        aJob = Job.Job( inputData, 0.1, 200 )
+        aJob = Job.Job( "T2_CH_CERN", inputData, 0.1, 200, theStore )
         self.system.addJob( aJob )
+        self.system.runJob( aJob, 0 )
 
     def testCreate(self):
         self.assertNotEqual( self.system, None )

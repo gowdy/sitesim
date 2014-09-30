@@ -11,8 +11,8 @@ class Site_t(unittest.TestCase):
         mySite = Site.Site( name, diskspace, cores, bandwidth )
         self.assertEqual( name, mySite.name )
         self.assertEqual( diskspace, mySite.disk )
-        self.assertEqual( cores, mySite.cores )
-        self.assertEqual( bandwidth, mySite.bandwidth )
+        self.assertEqual( cores, mySite.batch.cores )
+        self.assertEqual( bandwidth, mySite.batch.bandwidth )
 
 
 
