@@ -1,4 +1,6 @@
 # Site		StartTime	CPUtime		Files	PercRead
 T0_CH_CERN	0		300		/store/1,/store/2	10
 T0_CH_CERN	301		300		/store/2	100
-T0_CH_CERN	9999		0		/store/2	100
+T0_CH_CERN	601		300		/store/2	100
+T0_CH_CERN	901		300		/store/3	100
+T0_CH_CERN	9999		0		/store/3	100

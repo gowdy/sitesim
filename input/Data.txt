@@ -1,3 +1,4 @@
-#! LFN		Size
+#! LFN		Size (MB)
 /store/1	1000
 /store/2	10000
+/store/3	10000

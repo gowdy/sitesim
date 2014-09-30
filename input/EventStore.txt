@@ -3,3 +3,4 @@
 /store/2	T0_CH_CERN
 /store/2	T1_US_FNAL
 /store/1	T1_UK_RAL
+/store/3	T1_US_FNAL

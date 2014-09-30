@@ -37,6 +37,8 @@ class Site:
         ( self.batch.numberOfQueuedJobs(),
           self.batch.numberOfRunningJobs(),
           self.batch.numberOfDoneJobs() )
+        for job in self.batch.rJobs:
+            print "Job: cputime %d data time %d" % ( job.cpuTime, job.dataReadyTime )
         for job in self.batch.dJobs:
             print "Job: cputime %d actual time %d" % ( job.cpuTime, job.endTime - job.startTime )
 

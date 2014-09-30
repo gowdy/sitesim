@@ -1,3 +1,5 @@
+import Site
+
 class CMSFile:
     def __init__( self, lfn, size ):
         self.lfn=lfn # standard CMS LFN
@@ -33,11 +35,14 @@ class EventStore:
     def transferTime( self, lfn, fromSite, toSite ):
         time = 99999
         fileSize = self.sizeOf( lfn )
-        # TODO only use bandwidth, worry about latency?
-        networkLinks = Site.Site.sites[fromSite]
+        # TODO worry about latency
+        # TODO add in congestion
+        networkLinks = Site.Site.sites[fromSite].network
+        print networkLinks
         for link in networkLinks:
-            if link.site == toSite:
-                time = fileSize / link.bandwidth
+            if link[0] == toSite:
+                # fileSize in MB, link[1] is bandwidth in MB/s
+                time = float(fileSize) / float(link[1])
         return time
 
     def timeForFileAtSite( self, lfn, site ):
