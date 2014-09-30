@@ -10,14 +10,14 @@
 
 class Site:
     """A representation of a Site"""
-    sites=[] # all the sites
+    sites={} # all the sites
 
     def __init__( self, name, disk, cores, bandwidth):
         self.name = name # string name
         self.disk = disk # size in TB
-        self.bandwidth = bandwidth # MB/s
+        self.bandwidth = bandwidth
         self.network = []
-        self.batch = Batch( cores )
+        self.batch = Batch( cores, bandwidth )
 
     def addLink( self, otherSite, bandwidth, latency ):        
         self.network.append( [otherSite, bandwidth, latency ] )
@@ -42,8 +42,9 @@ class Site:
 
 class Batch:
     """Represents a batch system with jobs"""
-    def __init__(self, cores):
+    def __init__(self, cores, bandwidth):
         self.cores = cores
+        self.bandwidth = bandwidth # MB/s
         self.qJobs=[]
         self.rJobs=[]
         self.dJobs=[]
@@ -58,16 +59,14 @@ class Batch:
 
     def checkIfJobsFinished( self, timeNow ):
         for job in self.rJobs:
-            if job.cpuTime < ( timeNow - job.startTime ):
-                # job is done FIXME: add data information
-                job.endTime = job.startTime + job.cpuTime
+            if job.isFinished( timeNow ):
                 self.endJob( job )
 
     def addJob( self, job ):
         self.qJobs.append( job )
 
     def runJob( self, job, time ):
-        job.startTime = time
+        job.start( time )
         self.rJobs.append( job )
         self.qJobs.remove( job )
 

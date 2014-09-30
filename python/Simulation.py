@@ -21,7 +21,7 @@ def setupSimulation( theStore ):
         if line[0]=='#':
             continue
         ( name, space, cores, bandwidth ) = line.split()
-        Site.Site.sites.append( Site.Site( name, space, cores, bandwidth ) )
+        Site.Site.sites[name] = Site.Site( name, space, cores, bandwidth )
     print "Read in %d sites." % len(Site.Site.sites)
     sitesFile.close()
 
@@ -50,29 +50,16 @@ def setupSimulation( theStore ):
     locationsFile.close()
 
 
-def addNetwork( siteList, fromSite, toSite, bandwidth, latency ):
-    addTo = False
-    addFrom = False
-    for site in siteList:
-        if site.name == fromSite:
-            site.addLink( toSite, bandwidth, latency )
-            addFrom = True
-        elif site.name == toSite:
-            site.addLink( fromSite, bandwidth, latency )
-            addTo = True
-    if addTo == False:
-        raise Usage( "Link not added for to site: %s %s" % (site.name, toSite ) )
-    if addFrom == False:
-        raise Usage( "Link not added for from site: %s %s" % (site.name, fromSite ) )
-    
+def addNetwork( siteDict, fromSite, toSite, bandwidth, latency ):
+    siteDict[fromSite].addLink( toSite, bandwidth, latency )
+    siteDict[toSite].addLink( fromSite, bandwidth, latency )
 
 def runSimulation( theStore ):
-    for site in Site.Site.sites:
+    for site in Site.Site.sites.values():
         print site.name, site.network
 
     theStore.dump()
 
-    theJobs = []
     jobsFile = open( "input/Jobs.txt", 'r' )
     for line in jobsFile:
         if line[0]=='#':
@@ -81,22 +68,24 @@ def runSimulation( theStore ):
         startTime = int( startTimeS )
         cpuTime = int( cpuTimeS )
         percentageRead = int( percentageReadS )
-        theJob = Job.Job( lfns.split( ',' ), percentageRead, cpuTime )
-        for theSite in Site.Site.sites:
+        theJob = Job.Job( site, lfns.split( ',' ), percentageRead,
+                          cpuTime, theStore )
+        for theSite in Site.Site.sites.values():
             if theSite.name == site:
                 theSite.submit( theJob )
             theSite.pollSite( startTime )
-        for site in Site.Site.sites:
+        for site in Site.Site.sites.values():
             print "%s: %d %d %d" % ( site.name,
                                      site.batch.numberOfQueuedJobs(),
                                      site.batch.numberOfRunningJobs(),
                                      site.batch.numberOfDoneJobs() )
     jobsFile.close()
 
-def printResults():
-    for site in Site.Site.sites:
+def printResults( theStore ):
+    for site in Site.Site.sites.values():
         print site.name, site.network
         site.jobSummary()
+    theStore.dump()
 
 def main(argv=None):
     if argv is None:
@@ -109,7 +98,7 @@ def main(argv=None):
         theStore = Data.EventStore()
         setupSimulation( theStore )
         runSimulation( theStore )
-        printResults()
+        printResults( theStore )
     except Usage, err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"
