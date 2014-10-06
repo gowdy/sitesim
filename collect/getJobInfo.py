@@ -13,6 +13,8 @@ else:
 theJobs = json.load( returnedStream )["jobs"]
 
 class Job:
+    noCpu = 0
+    noStart = 0
     def __init__(self, site, file, start, end, cpu, jobID):
         self.site = site
         self.start = time.mktime( datetime.datetime.strptime( start, "%Y-%m-%dT%H:%M:%S" ).timetuple() )
@@ -23,9 +25,11 @@ class Job:
         # some start times are missing, work out a reasonable guess
         if self.start < 0:
             self.start = self.end - self.cpu
+            Job.noStart += 1
         # if CPU time empty work out a reasonable guess
         if self.cpu == 0:
             self.cpu = self.end - self.start
+            Job.noCpu += 1
     def add( self, file ):
         self.files.append( file )
 
@@ -44,14 +48,26 @@ for job in theJobs:
     #    print key
     #sys.exit(0)    
 
-print "# Site          StartTime     WallTime     CPUtime         Files   PercRead"
+known=0
+unknown=0
+outputFile = open( "Jobs_toSort.txt", "w" )
+outputFile.write( "# Site          StartTime     WallTime     CPUtime         Files   PercRead\n" )
 for job in jobs.values():
     if job.site == "unknown":
+        unknown+=1
         continue
-    print job.site, int(job.start), int(job.end - job.start), int(job.cpu),
+    else:
+        known+=1
+    outputFile.write( "%s %s %s %s " % ( job.site, int(job.start), int(job.end - job.start), int(job.cpu) ) )
     fileString = ""
     for file in job.files[:-1]:
         fileString += "%s," % file
     fileString += job.files[-1]
-    print "%s 100" % fileString
+    outputFile.write( "%s 100\n" % fileString )
 
+print "%f%% of lines have unknown site." % ( float(unknown) / ( unknown + known ) * 100 )
+print "%f%% of jobs had no CPU time." % ( float(Job.noCpu) / len( jobs ) * 100 )
+print "%f%% of jobs had no start time." % ( float(Job.noStart) / len( jobs ) * 100 )
+
+
+outputFile.close()
