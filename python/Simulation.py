@@ -64,12 +64,13 @@ def runSimulation( theStore ):
     for line in jobsFile:
         if line[0]=='#':
             continue
-        ( site, startTimeS, cpuTimeS, lfns, percentageReadS ) = line.split()
+        ( site, startTimeS, wallTimeS, cpuTimeS, lfns, percentageReadS ) = line.split()
         startTime = int( startTimeS )
+        wallTime = int( wallTimeS )
         cpuTime = int( cpuTimeS )
         percentageRead = int( percentageReadS )
         theJob = Job.Job( site, lfns.split( ',' ), percentageRead,
-                          cpuTime, theStore )
+                          wallTime, cpuTime, theStore )
         for theSite in Site.Site.sites.values():
             if theSite.name == site:
                 theSite.submit( theJob )

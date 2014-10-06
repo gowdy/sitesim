@@ -6,10 +6,12 @@
 
 class Job:
     """Description of a job in a batch system"""
-    def __init__( self, site, inputData, fractionRead, cpuTime, theStore ):
+    def __init__( self, site, inputData, fractionRead, wallTime, cpuTime,
+                  theStore ):
         self.site = site # site where the job is run
         self.inputData = inputData # list of files
         self.fractionRead = fractionRead # decimal fraction
+        self.wallTime = wallTime # wall time in seconds
         self.cpuTime = cpuTime # cputime in seconds
         self.startTime = 0
         self.endTime = 0
