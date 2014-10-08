@@ -34,6 +34,8 @@ class Link:
     def __init__( self, fromSite, toSite ):
         self.fromSite = fromSite
         self.toSite = toSite
+        self.bandwidth = 0.0
+        self.quality = 0.0
 
 for link in theLinks:
     fromSite = link["from"].replace("_MSS","").replace("_Disk","").replace("_Buffer","").replace("_Export","")
@@ -43,42 +45,23 @@ for link in theLinks:
 
 returnedStream.close()
 
-for link in linkList.values():
-    print link.fromSite, link.toSite
-
-sys.exit(0)
-                     
 if readCache:
-    returnedStream = open( "/tmp/sitedbInfo.cache.json","r" )
+    returnedStream = open( "/tmp/phedexLinkInfo.cache.json","r" )
 else:
-    returnedStream = opener.open( urllib2.Request( "https://cmsweb.cern.ch/sitedb/data/prod/resource-pledges", None, { "Accept" : "application/json" } ) )
+    returnedStream = opener.open( urllib2.Request( "https://cmsweb.cern.ch/phedex/datasvc/json/prod/transferhistory?starttime=2014-10-01&endtime=2014-10-02&binwidth=86400", None, { "Accept" : "application/json" } ) )
 
-theSiteInfo = json.load( returnedStream )["result"]
+theLinks = json.load( returnedStream )["phedex"]["link"]
 
-# It looks like the site pledges are always most recent first
-# but will check this while reading
-for siteInfoItem in theSiteInfo:
-    if siteInfoItem[2] == 2014:
-        thisSite = siteInfo[ siteInfoItem[0] ]
-        if thisSite.lastUpdateTime == 0:
-            thisSite.lastUpdateTime = siteInfoItem[1]
-            thisSite.cpuHS = siteInfoItem[3]
-            thisSite.disk = siteInfoItem[4]
-        elif siteInfoItem[1] > thisSite.lastUpdateTime:
-            print "More recent pledge found out of order."
-            sys.exit(1)
+for link in theLinks:
+    fromSite = link["from"].replace("_MSS","").replace("_Disk","").replace("_Buffer","").replace("_Export","")
+    toSite = link["to"].replace("_MSS","").replace("_Disk","").replace("_Buffer","").replace("_Export","")
+    if fromSite != toSite:
+        linkList[fromSite + toSite].quality = link["transfer"][0]["quality"]
+        linkList[fromSite + toSite].bandwidth = link["transfer"][0]["rate"]
 
 returnedStream.close()
 
-print "# Site Name     Disk Space (TB) Cores           Internal Bandwidth (MB/s)"
-for site in siteInfo.values():
-    # skip the T1 sites with Disk at the end
-    if site.name.endswith("Disk"):
-        continue
-    # if zero assume a default value of 100 slots and 10TB of disk
-    if site.disk == 0:
-        site.disk = 10
-    if site.cpuHS == 0:
-        site.cpuHS = 100.0 / 952 * 14
-    # assume internal bandwidth of 20GB/s for now
-    print site.name, site.disk, site.cpu(), 20000
+print "#From    To         Bandwidth(MB/s)        Quality"
+for link in linkList.values():
+    print link.fromSite, link.toSite, link.bandwidth, link.quality
+
