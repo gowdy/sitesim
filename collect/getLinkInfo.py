@@ -63,5 +63,11 @@ returnedStream.close()
 
 print "#From    To         Bandwidth(MB/s)        Quality"
 for link in linkList.values():
+    if link.bandwidth == 0.:
+        link.bandwidth = 1000
+    if link.bandwidth > 10000:
+        link.bandwidth = 10000
+    if link.quality == 0.:
+        link.quality = .99
     print link.fromSite, link.toSite, link.bandwidth, link.quality
 
