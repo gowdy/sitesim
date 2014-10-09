@@ -2,6 +2,8 @@ import json
 import urllib2,httplib
 import sys
 
+# This is a list of sites to create entries by hand for
+sitesInPhEDExNotSiteDB="T3_DE_Karlsruhe T3_GR_IASA_GR T3_GR_IASA_HG T3_UMiss T3_UCLASaxon T3_UVA"
 
 class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
     def __init__(self, key, cert):
@@ -50,6 +52,9 @@ for site in theSiteNames:
     #sys.exit(0)    
 
 returnedStream.close()
+
+for site in sitesInPhEDExNotSiteDB.split():
+    siteInfo[site] = Site( site, site )
 
 if readCache:
     returnedStream = open( "/tmp/sitedbInfo.cache.json","r" )

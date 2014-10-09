@@ -29,8 +29,8 @@ def setupSimulation( theStore ):
     for line in networkFile:
         if line[0]=='#':
             continue
-        ( fromSite, toSite, bandwidth, latency ) = line.split()
-        addNetwork( Site.Site.sites, fromSite, toSite, bandwidth, latency )
+        ( fromSite, toSite, bandwidth, quality ) = line.split()
+        addNetwork( Site.Site.sites, fromSite, toSite, bandwidth, quality )
     networkFile.close()
 
     filesFile = open( "input/Data.txt", 'r' )
@@ -50,9 +50,9 @@ def setupSimulation( theStore ):
     locationsFile.close()
 
 
-def addNetwork( siteDict, fromSite, toSite, bandwidth, latency ):
-    siteDict[fromSite].addLink( toSite, bandwidth, latency )
-    siteDict[toSite].addLink( fromSite, bandwidth, latency )
+def addNetwork( siteDict, fromSite, toSite, bandwidth, quality ):
+    siteDict[fromSite].addLink( toSite, bandwidth, quality )
+    siteDict[toSite].addLink( fromSite, bandwidth, quality )
 
 def runSimulation( theStore ):
     for site in Site.Site.sites.values():

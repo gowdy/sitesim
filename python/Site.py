@@ -19,8 +19,8 @@ class Site:
         self.network = []
         self.batch = Batch( cores, bandwidth )
 
-    def addLink( self, otherSite, bandwidth, latency ):        
-        self.network.append( [otherSite, bandwidth, latency ] )
+    def addLink( self, otherSite, bandwidth, quality ):        
+        self.network.append( [otherSite, bandwidth, quality ] )
 
     def bandwidthPerCore( self ):
         return self.bandwidth / self.batch.cores

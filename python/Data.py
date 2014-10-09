@@ -35,7 +35,7 @@ class EventStore:
     def transferTime( self, lfn, fromSite, toSite ):
         time = 99999
         fileSize = self.sizeOf( lfn )
-        # TODO worry about latency
+        # TODO worry about quality
         # TODO add in congestion
         networkLinks = Site.Site.sites[fromSite].network
         print networkLinks
