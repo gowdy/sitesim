@@ -78,17 +78,17 @@ theJobInfo.close()
 
 
 eventStore = open( "EventStore.txt", "w" )
-filesFile = open( "Files.txt", "w" )
+filesFile = open( "Data.txt", "w" )
 eventStore.write( "#LFN              Site\n" )
-filesFile.write( "#LFN             Size\n" )
+filesFile.write( "#LFN             Size (MB)\n" )
 for file in theFiles.keys():
     if file.startswith("/store/user"):
         eventStore.write( "%s %s\n" % ( file, theFiles[file] ) )
-        filesFile.write( "%s %s\n" % ( file, 1000 ) ) # assume 1GB file
+        filesFile.write( "%s %s\n" % ( file, 1024 ) ) # assume 1GB file
     else:
         sites = getSites( file )
         size = getSize( file )
-        filesFile.write( "%s %s\n" % ( file, size ) )
+        filesFile.write( "%s %s\n" % ( file, size/1024/1024 ) )
         for site in sites:
             eventStore.write( "%s %s\n" % ( file, site ) )
 eventStore.close()
