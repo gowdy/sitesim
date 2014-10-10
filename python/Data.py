@@ -38,7 +38,6 @@ class EventStore:
         # TODO worry about quality
         # TODO add in congestion
         networkLinks = Site.Site.sites[fromSite].network
-        print networkLinks
         for link in networkLinks:
             if link[0] == toSite:
                 # fileSize in MB, link[1] is bandwidth in MB/s

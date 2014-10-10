@@ -52,7 +52,6 @@ class Batch:
         self.dJobs=[]
 
     def startJobs( self, time ):
-        print self.numberOfQueuedJobs()
         for job in self.qJobs:
             if len( self.rJobs ) < self.cores:
                 self.runJob( job, time )

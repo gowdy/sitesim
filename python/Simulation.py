@@ -26,11 +26,14 @@ def setupSimulation( theStore ):
     sitesFile.close()
 
     networkFile = open( "input/Network.txt", 'r' )
+    links=0
     for line in networkFile:
         if line[0]=='#':
             continue
         ( fromSite, toSite, bandwidth, quality ) = line.split()
         addNetwork( Site.Site.sites, fromSite, toSite, bandwidth, quality )
+        links+=1
+    print "Read in %d network links." % links
     networkFile.close()
 
     filesFile = open( "input/Data.txt", 'r' )
@@ -39,14 +42,18 @@ def setupSimulation( theStore ):
             continue
         ( lfn, size ) = line.split()
         theStore.addFile( lfn, size )
+    print "Read in %d files." % theStore.size()
     filesFile.close()
 
     locationsFile = open( "input/EventStore.txt", 'r' )
+    locations = 0
     for line in locationsFile:
         if line[0]=='#':
             continue
         ( lfn, site ) = line.split()
         theStore.addSite( lfn, site )
+        locations+=1
+    print "Read in %d locations." % locations
     locationsFile.close()
 
 
@@ -55,12 +62,10 @@ def addNetwork( siteDict, fromSite, toSite, bandwidth, quality ):
     siteDict[toSite].addLink( fromSite, bandwidth, quality )
 
 def runSimulation( theStore ):
-    for site in Site.Site.sites.values():
-        print site.name, site.network
-
-    theStore.dump()
-
     jobsFile = open( "input/Jobs.txt", 'r' )
+    print "About to read and simulate %d jobs..." % len( jobsFile.readlines() )
+    jobsFile.seek( 0 )
+    jobIndex=0
     for line in jobsFile:
         if line[0]=='#':
             continue
@@ -71,22 +76,19 @@ def runSimulation( theStore ):
         percentageRead = int( percentageReadS )
         theJob = Job.Job( site, lfns.split( ',' ), percentageRead,
                           wallTime, cpuTime, theStore )
+        jobIndex+=1
         for theSite in Site.Site.sites.values():
             if theSite.name == site:
                 theSite.submit( theJob )
             theSite.pollSite( startTime )
-        for site in Site.Site.sites.values():
-            print "%s: %d %d %d" % ( site.name,
-                                     site.batch.numberOfQueuedJobs(),
-                                     site.batch.numberOfRunningJobs(),
-                                     site.batch.numberOfDoneJobs() )
+        if jobIndex%100==0:
+            print "Done %d jobs." % jobIndex
     jobsFile.close()
 
 def printResults( theStore ):
     for site in Site.Site.sites.values():
         print site.name, site.network
         site.jobSummary()
-    theStore.dump()
 
 def main(argv=None):
     if argv is None:
