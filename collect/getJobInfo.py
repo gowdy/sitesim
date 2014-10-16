@@ -2,6 +2,8 @@ import json
 import urllib2
 import sys
 import datetime, time
+from numpy import histogram,average
+
 
 readCache = True
 
@@ -22,13 +24,16 @@ class Job:
         self.cpu = cpu
         self.files = [file]
         self.jobID = jobID
+        self.flawed = False
         # some start times are missing, work out a reasonable guess
         if self.start < 0:
             self.start = self.end - self.cpu
+            self.flawed = True
             Job.noStart += 1
         # if CPU time empty work out a reasonable guess
         if self.cpu == 0:
             self.cpu = self.end - self.start
+            self.flawed = True
             Job.noCpu += 1
     def add( self, file ):
         self.files.append( file )
@@ -48,6 +53,23 @@ for job in theJobs:
     #    print key
     #sys.exit(0)    
 
+cpuEfficiencyList = []
+for job in jobs.values():
+    if job.flawed:
+        continue
+    cpuEfficiencyList.append( float(job.cpu) / ( job.end - job.start ) )
+print average( cpuEfficiencyList )
+( hist, bins ) = histogram( cpuEfficiencyList, bins=100, range=(0,1) )
+centreBins = []
+for bin in bins:
+    binCentre = bin + 0.005
+    centreBins.append( binCentre )
+#print bins
+for bin in centreBins:
+    print bin
+
+
+sys.exit(0)
 known=0
 unknown=0
 outputFile = open( "Jobs_toSort.txt", "w" )

@@ -6,6 +6,14 @@
 
 class Job:
     """Description of a job in a batch system"""
+
+    def runTime( cpuTime ):
+        """
+        Calculates estimated runTime based on cpuTime
+        """
+        
+
+
     def __init__( self, site, inputData, fractionRead, wallTime, cpuTime,
                   theStore ):
         self.site = site # site where the job is run
@@ -13,6 +21,7 @@ class Job:
         self.fractionRead = fractionRead # decimal fraction
         self.wallTime = wallTime # wall time in seconds
         self.cpuTime = cpuTime # cputime in seconds
+        self.runTime = Job.runTime( self.cpuTime )
         self.startTime = 0
         self.endTime = 0
         self.dataReadyTime = 0 # time data is ready to be read by job
