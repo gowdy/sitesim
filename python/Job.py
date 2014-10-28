@@ -4,15 +4,23 @@
 #
 #####################################################
 
+import random
+
+def runTime( cpuTime ):
+    """
+    Calculates estimated runTime based on cpuTime
+    """
+    bin = random.uniform( 0,100 )
+    value = random.uniform(0.0, Job.maxEfficiency )
+    if Job.efficiency[ int(bin) ] > value:
+        return  cpuTime / ( bin * 0.01 )
+    else:
+        return runTime( cpuTime )
+
 class Job:
     """Description of a job in a batch system"""
-
-    def runTime( cpuTime ):
-        """
-        Calculates estimated runTime based on cpuTime
-        """
-        
-
+    efficiency = []
+    maxEfficiency = 0.0
 
     def __init__( self, site, inputData, fractionRead, wallTime, cpuTime,
                   theStore ):
@@ -21,7 +29,7 @@ class Job:
         self.fractionRead = fractionRead # decimal fraction
         self.wallTime = wallTime # wall time in seconds
         self.cpuTime = cpuTime # cputime in seconds
-        self.runTime = Job.runTime( self.cpuTime )
+        self.runTime = runTime( self.cpuTime )
         self.startTime = 0
         self.endTime = 0
         self.dataReadyTime = 0 # time data is ready to be read by job
@@ -35,8 +43,8 @@ class Job:
 
 
     def isFinished( self, timeNow ):
-        if ( self.cpuTime + self.dataReadyTime ) < ( timeNow - self.startTime ):
-            self.endTime = self.startTime + self.cpuTime + self.dataReadyTime
+        if ( self.runTime + self.dataReadyTime ) < ( timeNow - self.startTime ):
+            self.endTime = self.startTime + self.runTime + self.dataReadyTime
             return True
         return False
 

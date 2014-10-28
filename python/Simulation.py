@@ -56,6 +56,19 @@ def setupSimulation( theStore ):
     print "Read in %d locations." % locations
     locationsFile.close()
 
+    jobFile = open( "input/Jobs_efficiency.txt", 'r' )
+    bins = 0
+    for line in jobFile:
+        if line[0]=='#':
+            continue
+        value = float( line )
+        Job.Job.efficiency.append( value )
+        if value > Job.Job.maxEfficiency:
+            Job.Job.maxEfficiency = value
+        bins+=1
+    print "Read in %d job efficiency bins." % bins
+    jobFile.close()
+
 
 def addNetwork( siteDict, fromSite, toSite, bandwidth, quality ):
     siteDict[fromSite].addLink( toSite, bandwidth, quality )
