@@ -53,23 +53,25 @@ for job in theJobs:
     #    print key
     #sys.exit(0)    
 
+outputFile = open( "Jobs_efficiency.txt", "w" )
+outputFile.write( "# Normalised values\n" )
+
 cpuEfficiencyList = []
 for job in jobs.values():
     if job.flawed:
         continue
     cpuEfficiencyList.append( float(job.cpu) / ( job.end - job.start ) )
-print average( cpuEfficiencyList )
+number = len( cpuEfficiencyList )
 ( hist, bins ) = histogram( cpuEfficiencyList, bins=100, range=(0,1) )
 centreBins = []
 for bin in bins:
     binCentre = bin + 0.005
     centreBins.append( binCentre )
-#print bins
-for bin in centreBins:
-    print bin
+for value in hist:
+    outputFile.write( "%f\n" % (float(value)/number) )
+outputFile.close()
 
 
-sys.exit(0)
 known=0
 unknown=0
 outputFile = open( "Jobs_toSort.txt", "w" )
