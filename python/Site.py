@@ -40,7 +40,7 @@ class Site:
         for job in self.batch.rJobs:
             print "Job: cputime %d data time %d" % ( job.cpuTime, job.dataReadyTime )
         for job in self.batch.dJobs:
-            print "Job: cputime %d actual time %d" % ( job.cpuTime, job.endTime - job.startTime )
+            print "Job: cputime %d sim time %d actual time %d" % ( job.cpuTime, job.endTime - job.startTime, job.wallTime )
 
 class Batch:
     """Represents a batch system with jobs"""
