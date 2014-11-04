@@ -60,6 +60,8 @@ class Job:
             timeForFile = self.theStore.timeForFileAtSite( lfn, self.site )
             if timeForFile < lowestTime:
                 lowestTime = timeForFile
+        if lowestTime > 0:
+            print "Data not local, delay of %d" % lowestTime
         return lowestTime
 
     def dump( self ):
