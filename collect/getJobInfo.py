@@ -2,7 +2,7 @@ import json
 import urllib2
 import sys
 import datetime, time
-from numpy import histogram,average
+from numpy import histogram2d,average
 
 
 readCache = True
@@ -57,21 +57,32 @@ outputFile = open( "Jobs_efficiency.txt", "w" )
 outputFile.write( "# Normalised values\n" )
 
 cpuEfficiencyList = []
+cpuTimeList = []
+cpuTimeMax = 0.
 for job in jobs.values():
     if job.flawed:
         continue
-    cpuEfficiencyList.append( float(job.cpu) / ( job.end - job.start ) )
+    cpuEfficiency = float(job.cpu) / ( job.end - job.start )
+    if cpuEfficiency > 1.:
+        print "cpuEfficiency > 1. (%f)" % cpuEfficiency
+    cpuEfficiencyList.append( cpuEfficiency  )
+    if job.cpu > cpuTimeMax:
+        cpuTimeMax = job.cpu
+    cpuTimeList.append( job.cpu )
 number = len( cpuEfficiencyList )
-( hist, bins ) = histogram( cpuEfficiencyList, bins=100, range=(0,1) )
+( hist, bins, yedges ) = histogram2d( cpuEfficiencyList, cpuTimeList, bins=(100,10), range=[(0,1),(0,cpuTimeMax)], normed=False )
 centreBins = []
-for bin in bins:
-    binCentre = bin + 0.005
-    centreBins.append( binCentre )
-for value in hist:
-    outputFile.write( "%f\n" % (float(value)/number) )
+#for bin in bins:
+#    binCentre = bin + 0.005
+#    centreBins.append( binCentre )
+for line,lowEff in zip( hist,bins ):
+    outputFile.write( "%f: " % lowEff )
+    for value,lowCPU in zip( line,yedges ):
+        outputFile.write( "%f:%d " % (lowCPU, value ) )
+    outputFile.write( "\n" )
 outputFile.close()
 
-
+sys.exit(1)
 known=0
 unknown=0
 outputFile = open( "Jobs_toSort.txt", "w" )
