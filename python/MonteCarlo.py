@@ -19,7 +19,12 @@ class MonteCarlo:
 
 
     def whichSlotFor( self, slotValue ):
-        return bisect.bisect( self.slotBinEdges, slotValue ) - 1
+        slot = bisect.bisect( self.slotBinEdges, slotValue ) - 1
+        # if it is off the end, use the last slot, can happen
+        # when the longer job does not have everything recorded for it
+        if slot == len( self.maxValues ):
+            slot -= 1
+        return slot
         
                 
     def getMCValue( self, dist, max ):
