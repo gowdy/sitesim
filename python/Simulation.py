@@ -5,7 +5,7 @@ Main simulation control code
 """
 
 
-import Site, Data, Job
+import Site, Data, Job, MonteCarlo
 
 import sys
 import getopt
@@ -58,20 +58,24 @@ def setupSimulation( theStore ):
 
     jobFile = open( "input/Jobs_efficiency.txt", 'r' )
     bins = 0
+    effBins = []
+    cpuBins = []
     for line in jobFile:
         if line[0]=='#':
             continue
-        if line[0:3] == 'EFF:':
-            effBins = line.split()[1:]
-        elif line[0:3] == 'CPU:':
-            cpuBins = line.split()[1:]
+        if line[0:4] == 'EFF:':
+            for x in line.split()[1:]:
+                effBins.append( float(x) )
+        elif line[0:4] == 'CPU:':
+            for x in line.split()[1:]:
+                cpuBins.append( float(x) )
+            Job.Job.mc = MonteCarlo.MonteCarlo( cpuBins, effBins )
         else:
             values = line.split()
-            Job.Job.efficiency.append( values )
-            if value > Job.Job.maxEfficiency:
-                Job.Job.maxEfficiency.append( value )
+            Job.Job.mc.append( values )
             bins+=1
-    print "Read in %d job efficiency bins." % bins
+    Job.Job.mc.check()
+    print "Read in %d job efficiency slots." % bins
     jobFile.close()
 
 

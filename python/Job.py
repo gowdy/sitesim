@@ -4,23 +4,17 @@
 #
 #####################################################
 
-import random
+import MonteCarlo
 
 def runTime( cpuTime ):
     """
     Calculates estimated runTime based on cpuTime
     """
-    bin = random.uniform( 0,100 )
-    value = random.uniform(0.0, Job.maxEfficiency )
-    if Job.efficiency[ int(bin) ] > value:
-        return  cpuTime / ( bin * 0.01 )
-    else:
-        return runTime( cpuTime )
+    return cpuTime / Job.mc.getMCValueForSlot( cpuTime )
 
 class Job:
     """Description of a job in a batch system"""
-    efficiency = []
-    maxEfficiency = 0.0
+    mc = None
 
     def __init__( self, site, inputData, fractionRead, wallTime, cpuTime,
                   theStore ):
