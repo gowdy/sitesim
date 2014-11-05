@@ -37,3 +37,14 @@ class MonteCarlo:
         maxValue = self.maxValues[ slotToUse ]
 
         return self.getMCValue( distToUse, maxValue )
+
+    def check( self ):
+        '''
+        make sure we are self consistent
+        '''
+        if len( self.lists ) != len( self.slotBinEdges ) - 1 \
+           or len( self.lists ) != len( self.maxValues ):
+            print "Inconsistent State of MonteCarlo object!"
+            return False
+        return True
+

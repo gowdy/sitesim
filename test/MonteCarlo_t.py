@@ -10,6 +10,7 @@ class MonteCarlo_t(unittest.TestCase):
         self.mc.append( [ 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ] )
         self.mc.append( [ 20, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] )
         self.mc.append( [ 0, 0, 0, 0, 0, 65, 0, 0, 0, 0 ] )
+        self.mc.check()
 
     def testCreate(self):
         self.assertNotEqual( self.mc, None )
@@ -33,6 +34,10 @@ class MonteCarlo_t(unittest.TestCase):
         self.assertEqual( self.mc.maxValues[ 2 ], 20 )
         self.assertEqual( self.mc.maxValues[ 3 ], 65 )
 
+    def testCheck( self ):
+        self.assertTrue( self.mc.check() )
+        self.mc.slotBinEdges.append( 20. )
+        self.assertFalse( self.mc.check() )
 
 if __name__ == '__main__':
     unittest.main()
