@@ -71,7 +71,9 @@ def setupSimulation( theStore ):
                 cpuBins.append( float(x) )
             Job.Job.mc = MonteCarlo.MonteCarlo( cpuBins, effBins )
         else:
-            values = line.split()
+            values = []
+            for x in line.split():
+                values.append( int( x ) )
             Job.Job.mc.append( values )
             bins+=1
     Job.Job.mc.check()
