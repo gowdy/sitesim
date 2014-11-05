@@ -61,11 +61,16 @@ def setupSimulation( theStore ):
     for line in jobFile:
         if line[0]=='#':
             continue
-        value = float( line )
-        Job.Job.efficiency.append( value )
-        if value > Job.Job.maxEfficiency:
-            Job.Job.maxEfficiency = value
-        bins+=1
+        if line[0:3] == 'EFF:':
+            effBins = line.split()[1:]
+        elif line[0:3] == 'CPU:':
+            cpuBins = line.split()[1:]
+        else:
+            values = line.split()
+            Job.Job.efficiency.append( values )
+            if value > Job.Job.maxEfficiency:
+                Job.Job.maxEfficiency.append( value )
+            bins+=1
     print "Read in %d job efficiency bins." % bins
     jobFile.close()
 
