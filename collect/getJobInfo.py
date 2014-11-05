@@ -54,7 +54,6 @@ for job in theJobs:
     #sys.exit(0)    
 
 outputFile = open( "Jobs_efficiency.txt", "w" )
-outputFile.write( "# Normalised values\n" )
 
 cpuEfficiencyList = []
 cpuTimeList = []
@@ -72,13 +71,16 @@ for job in jobs.values():
 number = len( cpuEfficiencyList )
 ( hist, bins, yedges ) = histogram2d( cpuEfficiencyList, cpuTimeList, bins=(100,10), range=[(0,1),(0,cpuTimeMax)], normed=False )
 centreBins = []
-#for bin in bins:
-#    binCentre = bin + 0.005
-#    centreBins.append( binCentre )
-for line,lowEff in zip( hist,bins ):
-    outputFile.write( "%f: " % lowEff )
-    for value,lowCPU in zip( line,yedges ):
-        outputFile.write( "%f:%d " % (lowCPU, value ) )
+outputFile.write( "# Efficiency bin edges\n" )
+for bin in bins:
+    outputFile.write( "%2f " % bin )
+outputFile.write( "\n# cpuTime bin edges\n" )
+for bin in yedges:
+    outputFile.write( "%f " % bin )
+outputFile.write( "\n# values of bins\n" )
+for line in hist:
+    for value in line:
+        outputFile.write( "%d " % value )
     outputFile.write( "\n" )
 outputFile.close()
 
