@@ -1,4 +1,5 @@
 import json
+import math
 import urllib2
 import sys
 import datetime, time
@@ -69,14 +70,14 @@ for job in jobs.values():
         cpuTimeMax = job.cpu
     cpuTimeList.append( job.cpu )
 number = len( cpuEfficiencyList )
-( hist, bins, yedges ) = histogram2d( cpuEfficiencyList, cpuTimeList, bins=(100,10), range=[(0,1),(0,cpuTimeMax)], normed=False )
-centreBins = []
+( hist, cpuEdges, bins ) = histogram2d( cpuTimeList, cpuEfficiencyList, bins=(10,100), range=[(0,math.ceil(cpuTimeMax)),(0,1)], normed=False )
+
 outputFile.write( "# Efficiency bin edges\nEFF: " )
 for bin in bins:
-    outputFile.write( "%2f " % bin )
+    outputFile.write( "%1.2f " % bin )
 outputFile.write( "\n# cpuTime bin edges\nCPU: " )
-for bin in yedges:
-    outputFile.write( "%f " % bin )
+for bin in cpuEdges:
+    outputFile.write( "%1.2f " % bin )
 outputFile.write( "\n# values of bins\n" )
 for line in hist:
     for value in line:
