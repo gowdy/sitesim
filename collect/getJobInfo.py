@@ -71,10 +71,10 @@ for job in jobs.values():
 number = len( cpuEfficiencyList )
 ( hist, bins, yedges ) = histogram2d( cpuEfficiencyList, cpuTimeList, bins=(100,10), range=[(0,1),(0,cpuTimeMax)], normed=False )
 centreBins = []
-outputFile.write( "# Efficiency bin edges\n" )
+outputFile.write( "# Efficiency bin edges\nEFF: " )
 for bin in bins:
     outputFile.write( "%2f " % bin )
-outputFile.write( "\n# cpuTime bin edges\n" )
+outputFile.write( "\n# cpuTime bin edges\nCPU: " )
 for bin in yedges:
     outputFile.write( "%f " % bin )
 outputFile.write( "\n# values of bins\n" )
@@ -84,7 +84,6 @@ for line in hist:
     outputFile.write( "\n" )
 outputFile.close()
 
-sys.exit(1)
 known=0
 unknown=0
 outputFile = open( "Jobs_toSort.txt", "w" )
