@@ -7,26 +7,26 @@ class MonteCarlo:
         self.binEdges = binEdges
         self.maxValues = []
         self.lists = []
-        for i in range( 1, len( slotBinEdges) - 1 ):
+        for i in range( 0, len( slotBinEdges) - 1 ):
             self.maxValues.append( 0 )
 
     def append( self, aListOfValues ):
         self.lists.append( aListOfValues )
-        thisList = len( self.lists )
+        thisList = len( self.lists ) - 1
         for item in aListOfValues:
             if item > self.maxValues[thisList]:
                 self.maxValues[thisList] = item
 
 
     def whichSlotFor( self, slotValue ):
-        return bisect.bisect( self.slotBinEdges, slotValue )
+        return bisect.bisect( self.slotBinEdges, slotValue ) - 1
         
                 
     def getMCValue( self, dist, max ):
         bin = int( random.uniform( 0, len(dist) ) )
         value = int( random.uniform(0.0, max ) )
         if dist[ bin ] > value:
-            return average( self.binValues[ bin ], self.binValues[ bin + 1 ] )
+            return (self.binEdges[ bin ] + self.binEdges[ bin + 1 ] ) / 2
         else:
             return self.getMCValue( dist, max )
 
