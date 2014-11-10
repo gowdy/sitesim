@@ -22,7 +22,7 @@ class MonteCarlo_t(unittest.TestCase):
         self.assertEqual( self.mc.whichSlotFor(3.0), 2 )
         self.assertEqual( self.mc.whichSlotFor(4.0), 2 )
         self.assertEqual( self.mc.whichSlotFor(5.0), 3 )
-        self.assertEqual( self.mc.whichSlotFor(6.0), 4 )
+        self.assertEqual( self.mc.whichSlotFor(6.0), 3 )
 
     def testMC( self ):
         self.assertEqual( self.mc.getMCValueForSlot( 5. ), 0.055  )
