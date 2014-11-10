@@ -2,9 +2,11 @@ import unittest
 import Site
 import Data
 import Job
+import Simulation
 
 class Batch_t(unittest.TestCase):
     def setUp(self):
+        Simulation.setupJobEffMC()
         cores = 3000
         bandwidth = 3000
         self.system = Site.Batch( cores, bandwidth )
@@ -14,7 +16,7 @@ class Batch_t(unittest.TestCase):
         theStore.addFile( file1, 10000 )
         theStore.addFile( file2, 20000 )
         inputData = { file1, file2 }
-        aJob = Job.Job( "T2_CH_CERN", inputData, 0.1, 200, theStore )
+        aJob = Job.Job( "T2_CH_CERN", inputData, 0.1, 220, 200, theStore )
         self.system.addJob( aJob )
         self.system.runJob( aJob, 0 )
 

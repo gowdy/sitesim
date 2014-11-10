@@ -56,6 +56,10 @@ def setupSimulation( theStore ):
     print "Read in %d locations." % locations
     locationsFile.close()
 
+    setupJobEffMC()
+
+
+def setupJobEffMC():
     jobFile = open( "input/Jobs_efficiency.txt", 'r' )
     bins = 0
     effBins = []
