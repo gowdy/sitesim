@@ -18,24 +18,35 @@ theJobs = json.load( returnedStream )["jobs"]
 class Job:
     noCpu = 0
     noStart = 0
+    cpuEfficiency = 1.
     def __init__(self, site, file, start, end, cpu, jobID):
         self.site = site
-        self.start = time.mktime( datetime.datetime.strptime( start, "%Y-%m-%dT%H:%M:%S" ).timetuple() )
+        self.startN = time.mktime( datetime.datetime.strptime( start, "%Y-%m-%dT%H:%M:%S" ).timetuple() )
         self.end = time.mktime( datetime.datetime.strptime( end, "%Y-%m-%dT%H:%M:%S" ).timetuple() )
-        self.cpu = cpu
+        self.cpuN = cpu
         self.files = [file]
         self.jobID = jobID
         self.flawed = False
-        # some start times are missing, work out a reasonable guess
-        if self.start < 0:
-            self.start = self.end - self.cpu
+        if self.startN < 0:
             self.flawed = True
             Job.noStart += 1
-        # if CPU time empty work out a reasonable guess
-        if self.cpu == 0:
-            self.cpu = self.end - self.start
+        if self.cpuN == 0:
             self.flawed = True
             Job.noCpu += 1
+
+    def start( self ):
+        # some start times are missing, work out a reasonable guess
+        if self.startN < 0:
+            self.startN = self.end - ( self.cpuN / Job.cpuEfficiency )
+        return self.startN
+
+    def cpu( self ):
+        # if CPU time empty work out a reasonable guess
+        if self.cpuN == 0:
+            self.cpuN = ( self.end - self.startN ) * Job.cpuEfficiency
+        return self.cpuN
+
+
     def add( self, file ):
         self.files.append( file )
 
@@ -62,15 +73,16 @@ cpuTimeMax = 0.
 for job in jobs.values():
     if job.flawed:
         continue
-    cpuEfficiency = float(job.cpu) / ( job.end - job.start )
+    cpuEfficiency = float(job.cpuN) / ( job.end - job.startN )
     if cpuEfficiency > 1.:
         print "cpuEfficiency > 1. (%f)" % cpuEfficiency
     cpuEfficiencyList.append( cpuEfficiency  )
-    if job.cpu > cpuTimeMax:
-        cpuTimeMax = job.cpu
-    cpuTimeList.append( job.cpu )
+    if job.cpuN > cpuTimeMax:
+        cpuTimeMax = job.cpuN
+    cpuTimeList.append( job.cpuN )
 number = len( cpuEfficiencyList )
 ( hist, cpuEdges, bins ) = histogram2d( cpuTimeList, cpuEfficiencyList, bins=(10,100), range=[(0,math.ceil(cpuTimeMax)),(0,1)], normed=False )
+Job.cpuEfficiency = average( cpuEfficiencyList )
 
 outputFile.write( "# Efficiency bin edges\nEFF: " )
 for bin in bins:
@@ -95,7 +107,7 @@ for job in jobs.values():
         continue
     else:
         known+=1
-    outputFile.write( "%s %s %s %s " % ( job.site, int(job.start), int(job.end - job.start), int(job.cpu) ) )
+    outputFile.write( "%s %s %s %s " % ( job.site, int(job.start()), int(job.end - job.start()), int(job.cpu()) ) )
     fileString = ""
     for file in job.files[:-1]:
         fileString += "%s," % file
