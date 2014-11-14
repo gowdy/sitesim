@@ -67,7 +67,7 @@ for link in linkList.values():
         link.bandwidth = 1000
     if link.bandwidth > 10000:
         link.bandwidth = 10000
-    if link.quality == 0.:
+    if link.quality == 0. or link.quality == None:
         link.quality = .99
     print link.fromSite, link.toSite, link.bandwidth, link.quality
 
