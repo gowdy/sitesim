@@ -31,7 +31,8 @@ def setupSimulation( theStore ):
         if line[0]=='#':
             continue
         ( fromSite, toSite, bandwidth, quality ) = line.split()
-        addNetwork( Site.Site.sites, fromSite, toSite, bandwidth, quality )
+        addNetwork( Site.Site.sites, fromSite, toSite,
+                    float(bandwidth), float(quality) )
         links+=1
     print "Read in %d network links." % links
     networkFile.close()
