@@ -1,4 +1,16 @@
 import Site
+import random
+
+
+def timeForRetries( transferTime, quality ):
+    time = 0
+    while random.random() > quality and time < 601.:
+        time += transferTime * random.random()
+    # After ten minutes of retries give up on this link
+    if time > 600.:
+        time = 99999.
+    return time
+
 
 class CMSFile:
     def __init__( self, lfn, size ):
@@ -35,13 +47,15 @@ class EventStore:
     def transferTime( self, lfn, fromSite, toSite ):
         time = 99999
         fileSize = self.sizeOf( lfn )
-        # TODO worry about quality
         # TODO add in congestion
         networkLinks = Site.Site.sites[fromSite].network
         for link in networkLinks:
             if link[0] == toSite:
                 # fileSize in MB, link[1] is bandwidth in MB/s
                 time = float(fileSize) / float(link[1])
+                # add any time needed to retry transfer
+                time += timeForRetries( time, link[2] )
+
         return time
 
     def timeForFileAtSite( self, lfn, site ):
