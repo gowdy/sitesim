@@ -18,6 +18,9 @@ class CMSFile:
         self.size=size # size in MB
 
 class EventStore:
+    # This variable is used currently to decide to keep files at
+    # sites after a transfer for a job or not
+    cacheMethod = "Keep"
     def __init__( self ):
         self.catalogue = {}
         self.files = []
@@ -68,6 +71,14 @@ class EventStore:
                 transferTime = self.transferTime( lfn, siteWithFile, site )
                 if transferTime < time:
                     time = transferTime
+
+        if time == 99999:
+            print "File transfer failed!!"
+            sys.exit( 1 )
+
+        if EventStore.cacheMethod == "Keep":
+            self.addSite( lfn, site )
+
         return time
 
     def dump( self ):
