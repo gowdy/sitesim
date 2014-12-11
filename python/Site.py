@@ -15,9 +15,22 @@ class Site:
     def __init__( self, name, disk, cores, bandwidth):
         self.name = name # string name
         self.disk = disk # size in TB
+        self.diskUsed = 0.
         self.bandwidth = bandwidth
         self.network = []
         self.batch = Batch( cores, bandwidth )
+
+    def addFileOfSize( self, size ):
+        if self.diskUsed + size > self.disk:
+            print "Disk space exhasted at %s." % self.name
+        else:
+            self.diskUsed += size
+
+    def removeFileOfSize( self, size ):
+        if self.diskUsed - size < 0.:
+            print "Disk space becoming negative at %s." % self.name
+        else:
+            self.diskUsed -= size
 
     def addLink( self, otherSite, bandwidth, quality ):        
         self.network.append( [otherSite, bandwidth, quality ] )

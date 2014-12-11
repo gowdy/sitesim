@@ -31,6 +31,9 @@ class EventStore:
 
     def addSite( self, lfn, site ):
         self.catalogue[ lfn ].append( site  )
+        # need to convert to TB from MB
+        Site.Site.sites[ site ].addFileOfSize( self.sizeOf( lfn )
+                                               / 1024 / 1024 )
 
     def size( self ):
         return len( self.catalogue )

@@ -21,7 +21,8 @@ def setupSimulation( theStore ):
         if line[0]=='#':
             continue
         ( name, space, cores, bandwidth ) = line.split()
-        Site.Site.sites[name] = Site.Site( name, space, cores, bandwidth )
+        Site.Site.sites[name] = Site.Site( name, float(space), int(cores),
+                                           float(bandwidth) )
     print "Read in %d sites." % len(Site.Site.sites)
     sitesFile.close()
 
@@ -42,7 +43,7 @@ def setupSimulation( theStore ):
         if line[0]=='#':
             continue
         ( lfn, size ) = line.split()
-        theStore.addFile( lfn, size )
+        theStore.addFile( lfn, float( size ) )
     print "Read in %d files." % theStore.size()
     filesFile.close()
 
@@ -117,6 +118,7 @@ def runSimulation( theStore ):
 def printResults( theStore ):
     for site in Site.Site.sites.values():
         print site.name, site.network
+        print "%fTB of %fTB used." % ( site.diskUsed, site.disk )
         site.jobSummary()
 
 def main(argv=None):
