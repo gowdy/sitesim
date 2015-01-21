@@ -1,6 +1,6 @@
 import Site
 import random
-
+import BinnedData
 
 def timeForRetries( transferTime, quality ):
     time = 0
@@ -24,7 +24,8 @@ class EventStore:
     def __init__( self ):
         self.catalogue = {}
         self.files = []
-
+        self.remoteRead = BinnedData.BinnedData()
+        
     def addFile( self, lfn, size ):
         self.files.append( (lfn, size ) )
         self.catalogue[ lfn ] = []
@@ -34,6 +35,9 @@ class EventStore:
         # need to convert to TB from MB
         Site.Site.sites[ site ].addFileOfSize( self.sizeOf( lfn )
                                                / 1024 / 1024 )
+
+    def addLatencyBin( self, binStart, cpuLoss ):
+        self.remoteRead.addBin( binStart, cpuLoss )
 
     def size( self ):
         return len( self.catalogue )

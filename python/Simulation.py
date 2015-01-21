@@ -58,6 +58,17 @@ def setupSimulation( theStore ):
     print "Read in %d locations." % locations
     locationsFile.close()
 
+    latencyFile = open( "input/RemoteRead.txt", 'r' )
+    latencyBins = 0
+    for line in latencyFile:
+        if line[0]=='#':
+            continue
+        ( binStart, effHit ) = line.split()
+        theStore.addLatencyBin( binStart, effHit )
+        latencyBins += 1
+    print "Read in %d latency bins." % latencyBins
+    latencyFile.close()
+   
     setupJobEffMC()
 
 
