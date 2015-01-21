@@ -5,6 +5,7 @@
 #####################################################
 
 import MonteCarlo
+import BinnedData
 
 def runTime( cpuTime ):
     """
@@ -12,9 +13,13 @@ def runTime( cpuTime ):
     """
     return cpuTime / Job.mc.getMCValueForSlot( cpuTime )
 
+def addLatencyBin( binStart, cpuLoss ):
+    Job.remoteRead.addBin( binStart, cpuLoss )
+
 class Job:
     """Description of a job in a batch system"""
     mc = None
+    remoteRead = BinnedData.BinnedData()
 
     def __init__( self, site, inputData, fractionRead, wallTime, cpuTime,
                   theStore ):
