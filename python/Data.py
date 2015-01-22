@@ -20,6 +20,9 @@ class EventStore:
     # This variable is used currently to decide to keep files at
     # sites after a transfer for a job or not
     cacheMethod = "Keep"
+    transferIfCan = False
+    transferType = "Serial"
+
     def __init__( self ):
         self.catalogue = {}
         self.files = []
@@ -62,6 +65,19 @@ class EventStore:
                 time += timeForRetries( time, link[2] )
 
         return time
+
+    def nearestSiteAndLatency( self, lfn, site ):
+        sitesWithFile = self.findFile( lfn )
+        if site in sitesWithFile:
+            return ( site, 0 )
+        bestLatency = 9999
+        networkLinks = Site.Site.sites[site].network
+        for link in networkLinks:
+            latency = link[ 3 ]
+            if latency < bestLatecy and link[0] in sitesWithFile:
+                bestLatency = latency
+                toSite = link[0]
+        return ( toSite, bestLatency )
 
     def timeForFileAtSite( self, lfn, site ):
         sitesWithFile = self.findFile( lfn )

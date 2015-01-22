@@ -32,14 +32,14 @@ class Job:
         self.startTime = 0
         self.endTime = 0
         self.dataReadyTime = 0 # time data is ready to be read by job
+        self.dataReadCPUHit = 0. # percentage hit in CPU time for remote reads
         self.theStore = theStore # link to event store information
+        self.totalFileSize = 0
+        for file in self.inputData:
+            self.totalFileSize+=self.theStore.sizeOf( file )
 
     def dataToRead( self ):
-        total=0
-        for file in self.inputData:
-            total+=self.theStore.sizeOf( file )
-        return total*self.fractionRead
-
+        return self.totalFileSize*self.fractionRead
 
     def isFinished( self, timeNow ):
         if ( self.runTime + self.dataReadyTime ) < ( timeNow - self.startTime ):
@@ -50,6 +50,24 @@ class Job:
     def start( self, time ):
         self.start = time
         self.dataReadyTime = self.timeToDataAvailable()
+
+    def makeDataAvailable( self ):
+        for lfn in self.inputData:
+            ( site, latency ) = self.theStore.nearestSiteAndLatency( lfn,
+                                                                     self.site )
+            timeForFile = self.theStore.timeForFileAtSite( lfn, self.site )
+            if timeForFile < 99999 and Data.Data.transferIfCan:
+                if Data.Data.transferType == "Serial":
+                    self.dataReadyTime += timeForFile
+                else:
+                    if self.dataReadyTime < timeForFile:
+                        self.dataReadyTime = timeForFile
+            else:
+                penalty = Job.remoteRead.lookup( latency )
+                # scale by size of file compared to all files
+                fractionForThisFile = self.eventStore.sizeOf( file ) \
+                                      / self.totalFileSize
+                self.dataReadCPUHit += fractionForThisFile * penalty
 
     def timeToDataAvailable( self ):
         # find the time for the first file to be available
