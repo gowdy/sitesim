@@ -1,73 +1,73 @@
-#From    To         Bandwidth(MB/s)        Quality
-T2_US_Vanderbilt T2_US_Purdue 1000 0.99
-T2_US_Caltech T1_US_FNAL 1000 0.99
-T2_US_MIT T2_US_Vanderbilt 1000 0.99
-T2_US_UCSD T2_US_Caltech 1000 0.99
-T2_US_Vanderbilt T2_US_Caltech 1000 0.99
-T2_US_Purdue T1_US_FNAL 1000 0.99
-T2_US_Florida T2_US_MIT 1000 0.99
-T1_US_FNAL T2_US_Caltech 10000 1.0000
-T2_US_Caltech T2_US_Wisconsin 1000 0.99
-T2_US_UCSD T2_US_Purdue 1000 0.99
-T2_US_MIT T2_US_Wisconsin 1000 0.99
-T2_US_Florida T2_US_UCSD 1000 0.99
-T2_US_Purdue T2_US_MIT 1000 0.99
-T1_US_FNAL T2_US_UCSD 1000 0.99
-T2_US_Purdue T2_US_Wisconsin 9596.9 1.0000
-T2_US_MIT T2_US_Nebraska 1000 0.99
-T2_US_Caltech T2_US_Purdue 1000 0.99
-T2_US_Nebraska T2_US_Vanderbilt 1000 0.99
-T2_US_Nebraska T2_US_Florida 1000 0.99
-T2_US_Vanderbilt T2_US_Florida 1000 0.99
-T2_US_Florida T2_US_Nebraska 1599.68 1.0000
-T2_US_Caltech T2_US_Nebraska 1000 0.99
-T2_US_Caltech T2_US_UCSD 1000 0.99
-T2_US_Florida T2_US_Purdue 1000 0.99
-T1_US_FNAL T2_US_Nebraska 10000 1.0000
-T2_US_Wisconsin T2_US_Caltech 1000 0.99
-T2_US_Wisconsin T2_US_Vanderbilt 1000 0.99
-T2_US_Vanderbilt T1_US_FNAL 1000 0.99
-T1_US_FNAL T2_US_MIT 1000 0.99
-T2_US_Nebraska T2_US_Purdue 1000 0.99
-T2_US_Caltech T2_US_Vanderbilt 1000 0.99
-T2_US_UCSD T1_US_FNAL 1000 0.99
-T2_US_Wisconsin T2_US_MIT 1000 0.99
-T1_US_FNAL T2_US_Florida 1000 0.99
-T2_US_Purdue T2_US_Vanderbilt 1000 0.99
-T2_US_MIT T2_US_UCSD 1000 0.99
-T2_US_Purdue T2_US_UCSD 1000 0.99
-T2_US_MIT T2_US_Florida 1000 0.99
-T2_US_Nebraska T2_US_MIT 1000 0.99
-T1_US_FNAL T2_US_Purdue 10000 1.0000
-T2_US_Caltech T2_US_Florida 1000 0.99
-T2_US_Wisconsin T1_US_FNAL 1000 0.99
-T2_US_Nebraska T2_US_Caltech 1000 0.99
-T2_US_Purdue T2_US_Florida 1000 0.99
-T2_US_Vanderbilt T2_US_MIT 1000 0.99
-T2_US_Wisconsin T2_US_UCSD 1000 0.99
-T2_US_Purdue T2_US_Caltech 1000 0.99
-T1_US_FNAL T2_US_Vanderbilt 10000 0.9195
-T2_US_UCSD T2_US_Nebraska 1000 0.0000
-T2_US_Caltech T2_US_MIT 1000 0.99
-T2_US_UCSD T2_US_Wisconsin 1599.35 1.0000
-T2_US_MIT T1_US_FNAL 1000 0.99
-T2_US_Wisconsin T2_US_Purdue 1000 0.99
-T2_US_MIT T2_US_Caltech 1000 0.99
-T2_US_Nebraska T1_US_FNAL 1000 0.99
-T2_US_Vanderbilt T2_US_Nebraska 1000 0.0000
-T2_US_Florida T1_US_FNAL 1000 0.99
-T2_US_UCSD T2_US_Florida 1000 0.99
-T2_US_MIT T2_US_Purdue 1000 0.99
-T2_US_Nebraska T2_US_UCSD 1000 0.99
-T1_US_FNAL T2_US_Wisconsin 1000 0.99
-T2_US_Wisconsin T2_US_Florida 1000 0.99
-T2_US_UCSD T2_US_Vanderbilt 1000 0.99
-T2_US_Wisconsin T2_US_Nebraska 1000 0.99
-T2_US_Vanderbilt T2_US_Wisconsin 1599.76 1.0000
-T2_US_Florida T2_US_Vanderbilt 1000 0.99
-T2_US_Florida T2_US_Wisconsin 1000 0.99
-T2_US_Florida T2_US_Caltech 1000 0.99
-T2_US_UCSD T2_US_MIT 1000 0.99
-T2_US_Vanderbilt T2_US_UCSD 1000 0.99
-T2_US_Purdue T2_US_Nebraska 6398.42 1.0000
-T2_US_Nebraska T2_US_Wisconsin 1599.68 1.0000
+#From    To         Bandwidth(MB/s)        Quality	Latency
+T2_US_Vanderbilt T2_US_Purdue 1000 0.99	   40
+T2_US_Caltech T1_US_FNAL 1000 0.99 100
+T2_US_MIT T2_US_Vanderbilt 1000 0.99	20
+T2_US_UCSD T2_US_Caltech 1000 0.99	20
+T2_US_Vanderbilt T2_US_Caltech 1000 0.99	100
+T2_US_Purdue T1_US_FNAL 1000 0.99   40
+T2_US_Florida T2_US_MIT 1000 0.99   40
+T1_US_FNAL T2_US_Caltech 10000 1.0000	100
+T2_US_Caltech T2_US_Wisconsin 1000 0.99	100
+T2_US_UCSD T2_US_Purdue 1000 0.99  100
+T2_US_MIT T2_US_Wisconsin 1000 0.99	40
+T2_US_Florida T2_US_UCSD 1000 0.99	100
+T2_US_Purdue T2_US_MIT 1000 0.99	40
+T1_US_FNAL T2_US_UCSD 1000 0.99		100
+T2_US_Purdue T2_US_Wisconsin 9596.9 1.0000	40
+T2_US_MIT T2_US_Nebraska 1000 0.99  70
+T2_US_Caltech T2_US_Purdue 1000 0.99	100
+T2_US_Nebraska T2_US_Vanderbilt 1000 0.99	70
+T2_US_Nebraska T2_US_Florida 1000 0.99		70
+T2_US_Vanderbilt T2_US_Florida 1000 0.99	40
+T2_US_Florida T2_US_Nebraska 1599.68 1.0000	70
+T2_US_Caltech T2_US_Nebraska 1000 0.99		40
+T2_US_Caltech T2_US_UCSD 1000 0.99		20
+T2_US_Florida T2_US_Purdue 1000 0.99		40
+T1_US_FNAL T2_US_Nebraska 10000 1.0000		40
+T2_US_Wisconsin T2_US_Caltech 1000 0.99		100
+T2_US_Wisconsin T2_US_Vanderbilt 1000 0.99	70
+T2_US_Vanderbilt T1_US_FNAL 1000 0.99 70
+T1_US_FNAL T2_US_MIT 1000 0.99	 70
+T2_US_Nebraska T2_US_Purdue 1000 0.99	100
+T2_US_Caltech T2_US_Vanderbilt 1000 0.99	100
+T2_US_UCSD T1_US_FNAL 1000 0.99	    100
+T2_US_Wisconsin T2_US_MIT 1000 0.99 70
+T1_US_FNAL T2_US_Florida 1000 0.99  70
+T2_US_Purdue T2_US_Vanderbilt 1000 0.99	40
+T2_US_MIT T2_US_UCSD 1000 0.99	   100
+T2_US_Purdue T2_US_UCSD 1000 0.99  100
+T2_US_MIT T2_US_Florida 1000 0.99  60
+T2_US_Nebraska T2_US_MIT 1000 0.99 100
+T1_US_FNAL T2_US_Purdue 10000 1.0000	70
+T2_US_Caltech T2_US_Florida 1000 0.99	100
+T2_US_Wisconsin T1_US_FNAL 1000 0.99	20
+T2_US_Nebraska T2_US_Caltech 1000 0.99	60
+T2_US_Purdue T2_US_Florida 1000 0.99	40
+T2_US_Vanderbilt T2_US_MIT 1000 0.99	40
+T2_US_Wisconsin T2_US_UCSD 1000 0.99	100
+T2_US_Purdue T2_US_Caltech 1000 0.99	100
+T1_US_FNAL T2_US_Vanderbilt 10000 0.9195	60
+T2_US_UCSD T2_US_Nebraska 1000 0.0000		60
+T2_US_Caltech T2_US_MIT 1000 0.99		100
+T2_US_UCSD T2_US_Wisconsin 1599.35 1.0000	70
+T2_US_MIT T1_US_FNAL 1000 0.99	   60
+T2_US_Wisconsin T2_US_Purdue 1000 0.99	60
+T2_US_MIT T2_US_Caltech 1000 0.99 100
+T2_US_Nebraska T1_US_FNAL 1000 0.99	40
+T2_US_Vanderbilt T2_US_Nebraska 1000 0.0000	70
+T2_US_Florida T1_US_FNAL 1000 0.99   70
+T2_US_UCSD T2_US_Florida 1000 0.99   100
+T2_US_MIT T2_US_Purdue 1000 0.99     40
+T2_US_Nebraska T2_US_UCSD 1000 0.99  70
+T1_US_FNAL T2_US_Wisconsin 1000 0.99 20
+T2_US_Wisconsin T2_US_Florida 1000 0.99	60
+T2_US_UCSD T2_US_Vanderbilt 1000 0.99	100
+T2_US_Wisconsin T2_US_Nebraska 1000 0.99	40
+T2_US_Vanderbilt T2_US_Wisconsin 1599.76 1.0000	60
+T2_US_Florida T2_US_Vanderbilt 1000 0.99 40
+T2_US_Florida T2_US_Wisconsin 1000 0.99	 70
+T2_US_Florida T2_US_Caltech 1000 0.99	 100
+T2_US_UCSD T2_US_MIT 1000 0.99	 100
+T2_US_Vanderbilt T2_US_UCSD 1000 0.99	100
+T2_US_Purdue T2_US_Nebraska 6398.42 1.0000	70
+T2_US_Nebraska T2_US_Wisconsin 1599.68 1.0000	40
