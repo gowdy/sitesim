@@ -32,8 +32,8 @@ class Site:
         else:
             self.diskUsed -= size
 
-    def addLink( self, otherSite, bandwidth, quality ):        
-        self.network.append( [otherSite, bandwidth, quality ] )
+    def addLink( self, otherSite, bandwidth, quality, latency ):
+        self.network.append( [otherSite, bandwidth, quality, latency ] )
 
     def bandwidthPerCore( self ):
         return self.bandwidth / self.batch.cores

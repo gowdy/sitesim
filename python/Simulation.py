@@ -31,9 +31,9 @@ def setupSimulation( theStore ):
     for line in networkFile:
         if line[0]=='#':
             continue
-        ( fromSite, toSite, bandwidth, quality ) = line.split()
+        ( fromSite, toSite, bandwidth, quality, latency ) = line.split()
         addNetwork( Site.Site.sites, fromSite, toSite,
-                    float(bandwidth), float(quality) )
+                    float(bandwidth), float(quality), float(latency) )
         links+=1
     print "Read in %d network links." % links
     networkFile.close()
@@ -98,9 +98,9 @@ def setupJobEffMC():
     jobFile.close()
 
 
-def addNetwork( siteDict, fromSite, toSite, bandwidth, quality ):
-    siteDict[fromSite].addLink( toSite, bandwidth, quality )
-    siteDict[toSite].addLink( fromSite, bandwidth, quality )
+def addNetwork( siteDict, fromSite, toSite, bandwidth, quality, latency ):
+    siteDict[fromSite].addLink( toSite, bandwidth, quality, latency )
+    siteDict[toSite].addLink( fromSite, bandwidth, quality, latency )
 
 def runSimulation( theStore ):
     jobsFile = open( "input/Jobs.txt", 'r' )
