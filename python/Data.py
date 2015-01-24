@@ -23,6 +23,7 @@ class EventStore:
     cacheMethod = "Keep"
     transferIfCan = True
     transferType = "Serial"
+    #transferType = "Parrallel"
 
     def __init__( self ):
         self.catalogue = {}
