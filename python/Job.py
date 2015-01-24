@@ -43,15 +43,18 @@ class Job:
         return self.totalFileSize*self.fractionRead
 
     def isFinished( self, timeNow ):
-        if ( self.runTime + self.dataReadyTime ) < ( timeNow - self.startTime ):
-            self.endTime = self.startTime + self.runTime + self.dataReadyTime
+        if self.endTime < timeNow:
             return True
         return False
 
     def start( self, time ):
-        self.start = time
-        #self.dataReadyTime = self.timeToDataAvailable()
+        self.startTime = time
         self.makeDataAvailable()
+        self.endTime = self.startTime \
+                       + self.runTime * ( 1 + self.dataReadCPUHit / 100 ) \
+                       + self.dataReadyTime
+        print "Job Delay: transfer %d remote %d%%" % ( self.dataReadyTime,
+                                                      self.dataReadCPUHit )
 
     def makeDataAvailable( self ):
         for lfn in self.inputData:
@@ -70,18 +73,6 @@ class Job:
                 fractionForThisFile = self.theStore.sizeOf( lfn ) \
                                       / self.totalFileSize
                 self.dataReadCPUHit += fractionForThisFile * penalty
-
-    def timeToDataAvailable( self ):
-        # find the time for the first file to be available
-        # TODO worry about the order of files
-        lowestTime = 99999
-        for lfn in self.inputData:
-            timeForFile = self.theStore.timeForFileAtSite( lfn, self.site )
-            if timeForFile < lowestTime:
-                lowestTime = timeForFile
-        if lowestTime > 0:
-            print "Data not local, delay of %d" % lowestTime
-        return lowestTime
 
     def dump( self ):
         print "Job: %s(%s%%) %ss" % ( self.inputData, self.fractionRead,
