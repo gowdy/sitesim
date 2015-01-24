@@ -1,5 +1,6 @@
 import Site
 import random
+import sys
 
 def timeForRetries( transferTime, quality ):
     time = 0
@@ -20,7 +21,7 @@ class EventStore:
     # This variable is used currently to decide to keep files at
     # sites after a transfer for a job or not
     cacheMethod = "Keep"
-    transferIfCan = False
+    transferIfCan = True
     transferType = "Serial"
 
     def __init__( self ):
@@ -44,7 +45,9 @@ class EventStore:
         for (lfn,size) in self.files:
             if lfn==lfnToFind:
                 return size
-        raise Usage( "File not found while trying to determine size." )
+        print "File not found while trying to determine size."
+        print lfnToFind
+        sys.exit(1)
 
     def removeFile( self, site, lfn ):
         self.catalogue[ lfn ].remove( site )
@@ -74,7 +77,7 @@ class EventStore:
         networkLinks = Site.Site.sites[site].network
         for link in networkLinks:
             latency = link[ 3 ]
-            if latency < bestLatecy and link[0] in sitesWithFile:
+            if latency < bestLatency and link[0] in sitesWithFile:
                 bestLatency = latency
                 toSite = link[0]
         return ( toSite, bestLatency )

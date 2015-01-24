@@ -64,7 +64,7 @@ def setupSimulation( theStore ):
         if line[0]=='#':
             continue
         ( binStart, effHit ) = line.split()
-        Job.addLatencyBin( binStart, effHit )
+        Job.addLatencyBin( float(binStart), float(effHit) )
         latencyBins += 1
     print "Read in %d latency bins." % latencyBins
     latencyFile.close()

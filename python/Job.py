@@ -6,6 +6,7 @@
 
 import MonteCarlo
 import BinnedData
+import Data
 
 def runTime( cpuTime ):
     """
@@ -49,15 +50,16 @@ class Job:
 
     def start( self, time ):
         self.start = time
-        self.dataReadyTime = self.timeToDataAvailable()
+        #self.dataReadyTime = self.timeToDataAvailable()
+        self.makeDataAvailable()
 
     def makeDataAvailable( self ):
         for lfn in self.inputData:
             ( site, latency ) = self.theStore.nearestSiteAndLatency( lfn,
                                                                      self.site )
             timeForFile = self.theStore.timeForFileAtSite( lfn, self.site )
-            if timeForFile < 99999 and Data.Data.transferIfCan:
-                if Data.Data.transferType == "Serial":
+            if timeForFile < 99999 and Data.EventStore.transferIfCan:
+                if Data.EventStore.transferType == "Serial":
                     self.dataReadyTime += timeForFile
                 else:
                     if self.dataReadyTime < timeForFile:
@@ -65,7 +67,7 @@ class Job:
             else:
                 penalty = Job.remoteRead.lookup( latency )
                 # scale by size of file compared to all files
-                fractionForThisFile = self.eventStore.sizeOf( file ) \
+                fractionForThisFile = self.theStore.sizeOf( lfn ) \
                                       / self.totalFileSize
                 self.dataReadCPUHit += fractionForThisFile * penalty
 
