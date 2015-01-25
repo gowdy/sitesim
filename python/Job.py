@@ -75,6 +75,8 @@ class Job:
                 self.dataReadCPUHit += fractionForThisFile * penalty
 
     def dump( self ):
-        print "Job: %s(%s%%) %ss" % ( self.inputData, self.fractionRead,
-                                      self.cpuTime )
+        print "Job: %s(%s%%) %ds CPU %ds wall ( %d-%d ) %d%% penalty %ds read" \
+            % ( self.inputData, self.fractionRead, self.cpuTime,
+                self.endTime - self.startTime, self.startTime, self.endTime,
+                self.dataReadCPUHit, self.dataReadyTime )
 
