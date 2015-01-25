@@ -65,14 +65,20 @@ class Batch:
         self.dJobs=[]
 
     def startJobs( self, time ):
+        tempList = []
         for job in self.qJobs:
+            tempList.append( job )
+        for job in tempList:
             if len( self.rJobs ) < self.cores:
                 self.runJob( job, time )
             else:
                 return
 
     def checkIfJobsFinished( self, timeNow ):
+        tempList = []
         for job in self.rJobs:
+            tempList.append( job )
+        for job in tempList:
             if job.isFinished( timeNow ):
                 self.endJob( job )
 
