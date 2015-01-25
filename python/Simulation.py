@@ -124,6 +124,10 @@ def runSimulation( theStore ):
             theSite.pollSite( startTime )
         if jobIndex%100==0:
             print "Done %d jobs." % jobIndex
+    # all jobs done, get sites to finish jobs
+    futureTime = 1600000000.
+    for theSite in Site.Site.sites.values():
+        theSite.pollSite( futureTime )
     jobsFile.close()
 
 def printResults( theStore ):
