@@ -58,16 +58,19 @@ class Job:
 
     def makeDataAvailable( self ):
         for lfn in self.inputData:
-            ( site, latency ) = self.theStore.nearestSiteAndLatency( lfn,
+            timeForFile = 99999
+            if Data.EventStore.transferIfCan:
+                timeForFile = self.theStore.timeForFileAtSite( lfn, self.site )
+                if timeForFile < 99999:
+                    if Data.EventStore.transferType == "Serial":
+                        self.dataReadyTime += timeForFile
+                    else:
+                        if self.dataReadyTime < timeForFile:
+                            self.dataReadyTime = timeForFile
+
+            if timeForFile == 99999 or not Data.EventStore.transferIfCan:
+                ( site, latency ) = self.theStore.nearestSiteAndLatency( lfn,
                                                                      self.site )
-            timeForFile = self.theStore.timeForFileAtSite( lfn, self.site )
-            if timeForFile < 99999 and Data.EventStore.transferIfCan:
-                if Data.EventStore.transferType == "Serial":
-                    self.dataReadyTime += timeForFile
-                else:
-                    if self.dataReadyTime < timeForFile:
-                        self.dataReadyTime = timeForFile
-            else:
                 penalty = Job.remoteRead.lookup( latency )
                 # scale by size of file compared to all files
                 fractionForThisFile = self.theStore.sizeOf( lfn ) \
