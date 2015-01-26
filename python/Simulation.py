@@ -9,6 +9,7 @@ import Site, Data, Job, MonteCarlo
 
 import sys
 import getopt
+import random
 
 
 class Usage(Exception):
@@ -73,6 +74,8 @@ def setupSimulation( theStore ):
 
 
 def setupJobEffMC():
+    # setup random number generator
+    random.seed( 16342243193 )
     jobFile = open( "input/Jobs_efficiency.txt", 'r' )
     bins = 0
     effBins = []
