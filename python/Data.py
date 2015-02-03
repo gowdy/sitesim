@@ -62,11 +62,11 @@ class EventStore:
         # TODO add in congestion
         networkLinks = Site.Site.sites[fromSite].network
         for link in networkLinks:
-            if link[0] == toSite:
-                # fileSize in MB, link[1] is bandwidth in MB/s
-                time = float(fileSize) / float(link[1])
+            if link.siteTo() == toSite:
+                # fileSize in MB,  bandwidth in MB/s
+                time = float(fileSize) / float( link.theBandwidth() )
                 # add any time needed to retry transfer
-                time += timeForRetries( time, link[2] )
+                time += timeForRetries( time, link.theQuality() )
 
         return time
 
@@ -77,10 +77,10 @@ class EventStore:
         bestLatency = 9999
         networkLinks = Site.Site.sites[site].network
         for link in networkLinks:
-            latency = link[ 3 ]
-            if latency < bestLatency and link[0] in sitesWithFile:
+            latency = link.theLatency()
+            if latency < bestLatency and link.siteTo() in sitesWithFile:
                 bestLatency = latency
-                toSite = link[0]
+                toSite = link.siteTo()
         return ( toSite, bestLatency )
 
     def timeForFileAtSite( self, lfn, site ):

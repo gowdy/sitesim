@@ -6,7 +6,29 @@
 #
 ############################################################
 
-
+class Link:
+    """A class that represents the network link between sites"""
+    def __init__( self, siteA, siteB, bandwidth, quality, latency ):
+        self.siteA = siteA
+        self.siteB = siteB
+        self.bandwidth = bandwidth
+        self.usedBandwidth = 0
+        self.quality = quality
+        self.latency = latency
+    def siteFrom( self ):
+        return self.siteA
+    def siteTo( self ):
+        return self.siteB
+    def theBandwidth( self ):
+        return self.bandwidth
+    def theUsedBandwidth( self ):
+        return self.usedBandwidth
+    def theQuality( self ):
+        return self.quality
+    def theLatency( self ):
+        return self.latency
+    def addTransfer( self, size ):
+        self.usedBandwidth = size
 
 class Site:
     """A representation of a Site"""
@@ -33,7 +55,8 @@ class Site:
             self.diskUsed -= size
 
     def addLink( self, otherSite, bandwidth, quality, latency ):
-        self.network.append( [otherSite, bandwidth, quality, latency ] )
+        self.network.append( Link( self.name, otherSite, bandwidth,
+                                   quality, latency ) )
 
     def bandwidthPerCore( self ):
         return self.bandwidth / self.batch.cores
