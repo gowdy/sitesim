@@ -15,6 +15,8 @@ class Link:
         self.usedBandwidth = 0
         self.quality = quality
         self.latency = latency
+        self.transfersInProgress = []
+
     def siteFrom( self ):
         return self.siteA
     def siteTo( self ):
@@ -27,8 +29,15 @@ class Link:
         return self.quality
     def theLatency( self ):
         return self.latency
-    def addTransfer( self, size ):
-        self.usedBandwidth = size
+    def addTransfer( self, transfer ):
+        self.transfersInProgress.append( transfer )
+        #self.usedBandwidth += transfer.bandwidthMax( self.latency )
+    def checkTransfers( self, time ):
+        for transfer in self.transfersInProgress:
+            if transfer.done( time ):
+                self.transfersInProgress.remove( transfer )
+                #self.usedBandwidth -= transfer.bandwidthMax( self.latency )
+
 
 class Site:
     """A representation of a Site"""
@@ -65,6 +74,8 @@ class Site:
         return self.batch.addJob( job )
 
     def pollSite( self, time ):
+        for link in self.network:
+            link.checkTransfers( time )
         self.batch.startJobs( time )
         self.batch.checkIfJobsFinished( time )
 
