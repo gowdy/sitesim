@@ -12,11 +12,6 @@ def timeForRetries( transferTime, quality ):
     return time
 
 
-class CMSFile:
-    def __init__( self, lfn, size ):
-        self.lfn=lfn # standard CMS LFN
-        self.size=size # size in MB
-
 class EventStore:
     # This variable is used currently to decide to keep files at
     # sites after a transfer for a job or not
@@ -106,3 +101,10 @@ class EventStore:
     def dump( self ):
         for ( lfn, sites ) in self.catalogue.items():
             print "%s: %s" % ( lfn, sites )
+
+
+class Transfer:
+    def __init__( self, start, end, lfn ):
+        self.start = start
+        self.end = end
+        self.lfn = lfn
