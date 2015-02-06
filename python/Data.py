@@ -108,3 +108,9 @@ class Transfer:
         self.start = start
         self.end = end
         self.lfn = lfn
+
+    def finished( self, time ):
+        if time > self.end:
+            return True
+        else:
+            return False
