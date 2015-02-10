@@ -66,10 +66,10 @@ class Job:
                             self.dataReadyTime = timeForFile
 
             if timeForFile == 99999 or not Data.EventStore.transferIfCan:
-                ( site, latency ) = self.theStore.nearestSiteAndLatency( lfn,
-                                                                         self.site,
-                                                                         timeToStartTransfer )
-                penalty = Job.remoteRead.lookup( latency )
+                penalty \
+                    = self.theStore.nearestSitePenalty( lfn,
+                                                        self.site,
+                                                        timeToStartTransfer )
                 # scale by size of file compared to all files
                 fractionForThisFile = self.theStore.sizeOf( lfn ) \
                                       / self.totalFileSize

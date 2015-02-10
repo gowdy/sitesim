@@ -69,7 +69,7 @@ class EventStore:
 
         return time
 
-    def nearestSiteAndLatency( self, lfn, site, startTime ):
+    def nearestSitePenalty( self, lfn, site, startTime ):
         sitesWithFile = self.findFile( lfn )
         if site in sitesWithFile:
             return ( site, 0 )
@@ -80,7 +80,8 @@ class EventStore:
             if latency < bestLatency and link.siteTo() in sitesWithFile:
                 bestLatency = latency
                 toSite = link.siteTo()
-        return ( toSite, bestLatency )
+        penalty = Job.remoteRead.lookup( latency )
+        return penalty
 
     def timeForFileAtSite( self, lfn, site, startTime ):
         sitesWithFile = self.findFile( lfn )
