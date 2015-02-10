@@ -5,7 +5,6 @@
 #####################################################
 
 import MonteCarlo
-import BinnedData
 import Data
 
 def runTime( cpuTime ):
@@ -14,13 +13,9 @@ def runTime( cpuTime ):
     """
     return cpuTime / Job.mc.getMCValueForSlot( cpuTime )
 
-def addLatencyBin( binStart, cpuLoss ):
-    Job.remoteRead.addBin( binStart, cpuLoss )
-
 class Job:
     """Description of a job in a batch system"""
     mc = None
-    remoteRead = BinnedData.BinnedData()
 
     def __init__( self, site, inputData, fractionRead, wallTime, cpuTime,
                   theStore ):
@@ -49,18 +44,20 @@ class Job:
 
     def start( self, time ):
         self.startTime = time
-        self.makeDataAvailable()
+        self.makeDataAvailable( time )
         self.endTime = self.startTime \
                        + self.runTime * ( 1 + self.dataReadCPUHit / 100 ) \
                        + self.dataReadyTime
         print "Job Delay: transfer %d remote %d%%" % ( self.dataReadyTime,
                                                       self.dataReadCPUHit )
 
-    def makeDataAvailable( self ):
+    def makeDataAvailable( self, start ):
+        timeToStartTransfer = start
         for lfn in self.inputData:
             timeForFile = 99999
             if Data.EventStore.transferIfCan:
-                timeForFile = self.theStore.timeForFileAtSite( lfn, self.site )
+                timeForFile = self.theStore.timeForFileAtSite( lfn, self.site,
+                                                               timeToStartTransfer)
                 if timeForFile < 99999:
                     if Data.EventStore.transferType == "Serial":
                         self.dataReadyTime += timeForFile
@@ -70,7 +67,8 @@ class Job:
 
             if timeForFile == 99999 or not Data.EventStore.transferIfCan:
                 ( site, latency ) = self.theStore.nearestSiteAndLatency( lfn,
-                                                                     self.site )
+                                                                         self.site,
+                                                                         timeToStartTransfer )
                 penalty = Job.remoteRead.lookup( latency )
                 # scale by size of file compared to all files
                 fractionForThisFile = self.theStore.sizeOf( lfn ) \

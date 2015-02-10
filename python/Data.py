@@ -1,4 +1,5 @@
 import Site
+import BinnedData
 import random
 import sys
 
@@ -11,6 +12,8 @@ def timeForRetries( transferTime, quality ):
         time = 99999.
     return time
 
+def addLatencyBin( binStart, cpuLoss ):
+    EventStore.remoteRead.addBin( binStart, cpuLoss )
 
 class EventStore:
     # This variable is used currently to decide to keep files at
@@ -19,6 +22,7 @@ class EventStore:
     transferIfCan = True
     transferType = "Serial"
     #transferType = "Parrallel"
+    remoteRead = BinnedData.BinnedData()
 
     def __init__( self ):
         self.catalogue = {}
@@ -65,7 +69,7 @@ class EventStore:
 
         return time
 
-    def nearestSiteAndLatency( self, lfn, site ):
+    def nearestSiteAndLatency( self, lfn, site, startTime ):
         sitesWithFile = self.findFile( lfn )
         if site in sitesWithFile:
             return ( site, 0 )
@@ -78,7 +82,7 @@ class EventStore:
                 toSite = link.siteTo()
         return ( toSite, bestLatency )
 
-    def timeForFileAtSite( self, lfn, site ):
+    def timeForFileAtSite( self, lfn, site, startTime ):
         sitesWithFile = self.findFile( lfn )
         time = 99999
         if site in sitesWithFile:
