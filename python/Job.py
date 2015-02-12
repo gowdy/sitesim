@@ -46,7 +46,7 @@ class Job:
         self.startTime = time
         self.makeDataAvailable( time )
         self.endTime = self.startTime \
-                       + self.runTime * ( 1 + self.dataReadCPUHit / 100 ) \
+                       + self.runTime * ( 1. + self.dataReadCPUHit / 100. ) \
                        + self.dataReadyTime
         print "Job Delay: transfer %d remote %d%%" % ( self.dataReadyTime,
                                                       self.dataReadCPUHit )
@@ -66,14 +66,12 @@ class Job:
                             self.dataReadyTime = timeForFile
 
             if timeForFile == 99999 or not Data.EventStore.transferIfCan:
-                penalty \
-                    = self.theStore.nearestSitePenalty( lfn,
-                                                        self.site,
-                                                        timeToStartTransfer )
-                # scale by size of file compared to all files
-                fractionForThisFile = self.theStore.sizeOf( lfn ) \
-                                      / self.totalFileSize
-                self.dataReadCPUHit += fractionForThisFile * penalty
+                self.dataReadCPUHit \
+                    +=  self.theStore.nearestSiteCPUHit( lfn,
+                                                         self.site,
+                                                         timeToStartTransfer,
+                                                         self.totalFileSize,
+                                                         self.runTime )
 
     def dump( self ):
         print "Job: %s(%s%%) %ds CPU %ds wall ( %d-%d ) %d%% penalty %ds read" \

@@ -69,10 +69,10 @@ class EventStore:
 
         return time
 
-    def nearestSitePenalty( self, lfn, site, startTime ):
+    def nearestSiteCPUHit( self, lfn, site, startTime, totalFileSize, runTime ):
         sitesWithFile = self.findFile( lfn )
         if site in sitesWithFile:
-            return ( site, 0 )
+            return 0.
         bestLatency = 9999
         networkLinks = Site.Site.sites[site].network
         for link in networkLinks:
@@ -80,8 +80,13 @@ class EventStore:
             if latency < bestLatency and link.siteTo() in sitesWithFile:
                 bestLatency = latency
                 toSite = link.siteTo()
-        penalty = Job.remoteRead.lookup( latency )
-        return penalty
+        penalty = EventStore.remoteRead.lookup( bestLatency )
+        #scale by size of file compared to all files
+        fractionForThisFile = self.sizeOf( lfn ) / totalFileSize
+        endTime = startTime \
+                  + fractionForThisFile * ( 1. + penalty / 100. ) * runTime
+        link.addTransfer( Transfer( startTime, endTime, lfn ) )
+        return fractionForThisFile * penalty
 
     def timeForFileAtSite( self, lfn, site, startTime ):
         sitesWithFile = self.findFile( lfn )
