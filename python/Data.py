@@ -19,6 +19,7 @@ class EventStore:
     # This variable is used currently to decide to keep files at
     # sites after a transfer for a job or not
     cacheMethod = "Keep"
+    #transferIfCan = False
     transferIfCan = True
     transferType = "Serial"
     #transferType = "Parrallel"
@@ -55,21 +56,8 @@ class EventStore:
     def findFile( self, lfnToFind ):
         return self.catalogue[ lfnToFind ]
 
-    def transferTime( self, lfn, fromSite, toSite ):
-        time = 99999
-        fileSize = self.sizeOf( lfn )
-        # TODO add in congestion
-        networkLinks = Site.Site.sites[fromSite].network
-        for link in networkLinks:
-            if link.siteTo() == toSite:
-                # fileSize in MB,  bandwidth in MB/s
-                time = float(fileSize) / float( link.theBandwidth() )
-                # add any time needed to retry transfer
-                time += timeForRetries( time, link.theQuality() )
-
-        return time
-
     def nearestSiteCPUHit( self, lfn, site, startTime, totalFileSize, runTime ):
+        linkUsed = None
         sitesWithFile = self.findFile( lfn )
         if site in sitesWithFile:
             return 0.
@@ -79,25 +67,38 @@ class EventStore:
             latency = link.theLatency()
             if latency < bestLatency and link.siteTo() in sitesWithFile:
                 bestLatency = latency
-                toSite = link.siteTo()
+                linkUsed = link
         penalty = EventStore.remoteRead.lookup( bestLatency )
         #scale by size of file compared to all files
         fractionForThisFile = self.sizeOf( lfn ) / totalFileSize
+        # TODO add congestion check
         endTime = startTime \
                   + fractionForThisFile * ( 1. + penalty / 100. ) * runTime
-        link.addTransfer( Transfer( startTime, endTime, lfn ) )
+        print startTime, fractionForThisFile, penalty, runTime
+        if linkUsed != None:
+            linkUsed.addTransfer( Transfer( startTime, endTime, lfn ) )
         return fractionForThisFile * penalty
 
     def timeForFileAtSite( self, lfn, site, startTime ):
         sitesWithFile = self.findFile( lfn )
+        fileSize = self.sizeOf( lfn )
         time = 99999
+        linkUsed = None
         if site in sitesWithFile:
             time = 0
         else:
             for siteWithFile in sitesWithFile:
-                transferTime = self.transferTime( lfn, siteWithFile, site )
-                if transferTime < time:
-                    time = transferTime
+                networkLinks = Site.Site.sites[siteWithFile].network
+                for link in networkLinks:
+                    if link.siteTo() == site:
+                        # fileSize in MB,  bandwidth in MB/s
+                        # TODO add in congestion
+                        tTime = float(fileSize) / float( link.theBandwidth() )
+                        # add any time needed to retry transfer
+                        tTime += timeForRetries( time, link.theQuality() )
+                        if tTime < time:
+                            time = tTime
+                            linkUsed = link
 
         if time == 99999:
             print "File transfer failed!!"
@@ -105,6 +106,9 @@ class EventStore:
 
         if EventStore.cacheMethod == "Keep":
             self.addSite( lfn, site )
+
+        if linkUsed != None:
+            linkUsed.addTransfer( Transfer( startTime, startTime + time, lfn ) )
 
         return time
 
@@ -118,6 +122,7 @@ class Transfer:
         self.start = start
         self.end = end
         self.lfn = lfn
+        print self.start, self.end, self.lfn
 
     def done( self, time ):
         if time > self.end:

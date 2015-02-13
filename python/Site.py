@@ -33,7 +33,12 @@ class Link:
         self.transfersInProgress.append( transfer )
         #self.usedBandwidth += transfer.bandwidthMax( self.latency )
     def checkTransfers( self, time ):
+        print "Time: %d" % time
         for transfer in self.transfersInProgress:
+            print "Transfer: %d ( %d - %d ) %s" % ( transfer.end - transfer.start,
+                                                    transfer.start,
+                                                    transfer.end,
+                                                    transfer.lfn )
             if transfer.done( time ):
                 self.transfersInProgress.remove( transfer )
                 #self.usedBandwidth -= transfer.bandwidthMax( self.latency )
