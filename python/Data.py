@@ -56,8 +56,9 @@ class EventStore:
     def findFile( self, lfnToFind ):
         return self.catalogue[ lfnToFind ]
 
-    def nearestSiteCPUHit( self, lfn, site, startTime, totalFileSize, runTime ):
+    def nearestSiteCPUHit( self, lfn, startTime, job ):
         linkUsed = None
+        site = job.theSite()
         sitesWithFile = self.findFile( lfn )
         if site in sitesWithFile:
             return 0.
@@ -70,17 +71,18 @@ class EventStore:
                 linkUsed = link
         penalty = EventStore.remoteRead.lookup( bestLatency )
         #scale by size of file compared to all files
-        fractionForThisFile = self.sizeOf( lfn ) / totalFileSize
+        fractionForThisFile = self.sizeOf( lfn ) / job.theTotalFileSize()
         # TODO add congestion check
-        endTime = startTime \
-                  + fractionForThisFile * ( 1. + penalty / 100. ) * runTime
-        print startTime, fractionForThisFile, penalty, runTime
+        endTime = startTime + fractionForThisFile * \
+                  ( 1. + penalty / 100. ) * job.theRunTime()
+        print startTime, fractionForThisFile, penalty, job.theRunTime()
         if linkUsed != None:
-            linkUsed.addTransfer( Transfer( startTime, endTime, lfn ) )
+            linkUsed.addTransfer( Transfer( startTime, endTime, job, lfn ) )
         return fractionForThisFile * penalty
 
-    def timeForFileAtSite( self, lfn, site, startTime ):
+    def timeForFileAtSite( self, lfn, startTime, job ):
         sitesWithFile = self.findFile( lfn )
+        site = job.theSite()
         fileSize = self.sizeOf( lfn )
         time = 99999
         linkUsed = None
@@ -108,7 +110,8 @@ class EventStore:
             self.addSite( lfn, site )
 
         if linkUsed != None:
-            linkUsed.addTransfer( Transfer( startTime, startTime + time, lfn ) )
+            linkUsed.addTransfer( Transfer( startTime, startTime + time,
+                                            job, lfn ) )
 
         return time
 
@@ -118,11 +121,12 @@ class EventStore:
 
 
 class Transfer:
-    def __init__( self, start, end, lfn ):
+    def __init__( self, start, end, job, lfn ):
         self.start = start
         self.end = end
+        self.job = job
         self.lfn = lfn
-        print self.start, self.end, self.lfn
+        print self.start, self.end, self.job, self.lfn
 
     def done( self, time ):
         if time > self.end:

@@ -41,6 +41,7 @@ class Link:
                                                     transfer.lfn )
             if transfer.done( time ):
                 self.transfersInProgress.remove( transfer )
+                print "Removed Transfer!"
                 #self.usedBandwidth -= transfer.bandwidthMax( self.latency )
 
 

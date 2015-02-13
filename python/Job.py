@@ -34,8 +34,14 @@ class Job:
         for file in self.inputData:
             self.totalFileSize+=self.theStore.sizeOf( file )
 
+    def theRunTime( self ):
+        return self.runTime
+
     def dataToRead( self ):
         return self.totalFileSize*self.fractionRead
+
+    def theTotalFileSize( self ):
+        return self.totalFileSize
 
     def isFinished( self, timeNow ):
         if self.endTime < timeNow:
@@ -56,8 +62,10 @@ class Job:
         for lfn in self.inputData:
             timeForFile = 99999
             if Data.EventStore.transferIfCan:
-                timeForFile = self.theStore.timeForFileAtSite( lfn, self.site,
-                                                               timeToStartTransfer)
+                timeForFile \
+                    = self.theStore.timeForFileAtSite( lfn,
+                                                       timeToStartTransfer,
+                                                       self )
                 if timeForFile < 99999:
                     if Data.EventStore.transferType == "Serial":
                         self.dataReadyTime += timeForFile
@@ -68,10 +76,8 @@ class Job:
             if timeForFile == 99999 or not Data.EventStore.transferIfCan:
                 self.dataReadCPUHit \
                     +=  self.theStore.nearestSiteCPUHit( lfn,
-                                                         self.site,
                                                          timeToStartTransfer,
-                                                         self.totalFileSize,
-                                                         self.runTime )
+                                                         self )
 
     def dump( self ):
         print "Job: %s(%s%%) %ds CPU %ds wall ( %d-%d ) %d%% penalty %ds read" \
@@ -79,3 +85,5 @@ class Job:
                 self.endTime - self.startTime, self.startTime, self.endTime,
                 self.dataReadCPUHit, self.dataReadyTime )
 
+    def theSite( self ):
+        return self.site
