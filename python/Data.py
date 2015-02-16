@@ -71,13 +71,16 @@ class EventStore:
                 linkUsed = link
         penalty = EventStore.remoteRead.lookup( bestLatency )
         #scale by size of file compared to all files
-        fractionForThisFile = self.sizeOf( lfn ) / job.theTotalFileSize()
+        fileSize = self.sizeOf( lfn )
+        fractionForThisFile = fileSize / job.theTotalFileSize()
         # TODO add congestion check
         endTime = startTime + fractionForThisFile * \
                   ( 1. + penalty / 100. ) * job.theRunTime()
         print startTime, fractionForThisFile, penalty, job.theRunTime()
         if linkUsed != None:
-            linkUsed.addTransfer( Transfer( startTime, endTime, job, lfn ) )
+            linkUsed.addTransfer( Transfer( startTime, endTime,
+                                            job, lfn, fileSize,
+                                            Transfer.moveFile ) )
         return fractionForThisFile * penalty
 
     def timeForFileAtSite( self, lfn, startTime, job ):
@@ -111,7 +114,8 @@ class EventStore:
 
         if linkUsed != None:
             linkUsed.addTransfer( Transfer( startTime, startTime + time,
-                                            job, lfn ) )
+                                            job, lfn, fileSize,
+                                            Transfer.remoteRead ) )
 
         return time
 
@@ -121,15 +125,34 @@ class EventStore:
 
 
 class Transfer:
-    def __init__( self, start, end, job, lfn ):
+    """ Class to represent a data transfer """
+    """ can be either a normal point to point transfer at full wire """
+    """ speed or a remote read while job is run """
+    remoteRead, moveFile = range(2)
+    def __init__( self, start, end, job, lfn, size, tranType ):
         self.start = start
         self.end = end
         self.job = job
         self.lfn = lfn
-        print self.start, self.end, self.job, self.lfn
+        self.size = size
+        self.type = tranType
+        self.rate = size / ( end - start )
+        self.transferDone = 0
+        self.lastChangeTime = start
 
     def done( self, time ):
         if time > self.end:
             return True
         else:
             return False
+
+    def updateRate( self, time, newSpeed ):
+        """ Update the rate of a transfer in progress """
+        self.transferDone = ( self.lastChangeTime - self.start ) * self.rate
+        newEnd = ( self.size - self.transferDone ) / newSpeed
+        delay = newEnd - self.end
+        self.end = newEnd
+        if self.type == remoteRead:
+            self.job.readTimeChanged( delay )
+        else:
+            self.job.transferTimeChanged( delay )

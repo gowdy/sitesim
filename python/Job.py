@@ -51,11 +51,25 @@ class Job:
     def start( self, time ):
         self.startTime = time
         self.makeDataAvailable( time )
+        self.determineEndTime()
+
+    def determineEndTime( self ):
         self.endTime = self.startTime \
                        + self.runTime * ( 1. + self.dataReadCPUHit / 100. ) \
                        + self.dataReadyTime
         print "Job Delay: transfer %d remote %d%%" % ( self.dataReadyTime,
-                                                      self.dataReadCPUHit )
+                                                       self.dataReadCPUHit )
+
+    def readTimeChanged( self, delay ):
+        """ Work out what the CPU hit should be to account for delay """
+        self.dataReadCPUHit = ( ( self.endTime + delay - self.startTime -
+                                  self.dataReadTime ) / self.runTime ) - 1.
+        self.dataReadCPUHit *= 100.
+        self.determineEndTime()
+
+    def transferTimeChanged( self, delay ):
+        self.dataReadTime += delay
+        self.determineEndTime()
 
     def makeDataAvailable( self, start ):
         timeToStartTransfer = start
