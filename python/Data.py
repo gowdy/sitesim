@@ -15,6 +15,9 @@ def timeForRetries( transferTime, quality ):
 def addLatencyBin( binStart, cpuLoss ):
     EventStore.remoteRead.addBin( binStart, cpuLoss )
 
+def addTransferBin( binStart, speed ):
+    EventStore.fileTransfer.addBin( binStart, speed )
+
 class EventStore:
     # This variable is used currently to decide to keep files at
     # sites after a transfer for a job or not
@@ -98,7 +101,10 @@ class EventStore:
                 for link in networkLinks:
                     if link.siteTo() == site:
                         # fileSize in MB,  bandwidth in MB/s
-                        tTime = float(fileSize) / float( link.theBandwidth() )
+                        linkLatency = link.theLatency()
+                        maxRateForLink = EventStore.fileTransfer.lookup( linkLatency )
+                        actualSpeed = max( link.theBandwidth(), maxRateForLink )
+                        tTime = float(fileSize) / float( actualSpeed )
                         # add any time needed to retry transfer
                         tTime += timeForRetries( tTime, link.theQuality() )
                         if tTime < time:
@@ -130,6 +136,9 @@ class Transfer:
     """ speed or a remote read while job is run """
     ( remoteRead, moveFile ) = range(2)
     def __init__( self, start, end, job, lfn, size, tranType ):
+        if end < start:
+            print "Transfer ends before it starts!!"
+            sys.exit(1)
         self.start = start
         self.end = end
         self.job = job
@@ -161,12 +170,27 @@ class Transfer:
 
     def updateRate( self, newSpeed, time ):
         """ Update the rate of a transfer in progress """
+        if newSpeed < 0.:
+            print "Negative speed requested for transfer!"
+            sys.exit(1)
         if newSpeed > self.maxRate:
             newSpeed = self.maxRate
         self.transferDone += ( time - self.lastChangeTime ) * self.rate
-        self.lastChangeTime = time
-        newEnd = time + ( self.size - self.transferDone ) / newSpeed
+        # due to quantisation of time need to check to see if it is already
+        # done or not...
+        if self.transferDone >= self.size:
+            newEnd = time
+        else:
+            newEnd = time + ( self.size - self.transferDone ) / newSpeed
         delay = newEnd - self.end
+        if newEnd < self.start:
+            print "New end time is before existing start time!"
+            print "Transfer has completed %dMB." % self.transferDone
+            print time, self.lastChangeTime
+            print time - self.lastChangeTime
+            self.dump()
+            sys.exit(1)
+        self.lastChangeTime = time
         self.end = newEnd
         self.rate = newSpeed
         if self.type == Transfer.remoteRead:
