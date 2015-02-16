@@ -24,6 +24,7 @@ class EventStore:
     transferType = "Serial"
     #transferType = "Parrallel"
     remoteRead = BinnedData.BinnedData()
+    fileTransfer = BinnedData.BinnedData()
 
     def __init__( self ):
         self.catalogue = {}
@@ -80,7 +81,7 @@ class EventStore:
         if linkUsed != None:
             linkUsed.addTransfer( Transfer( startTime, endTime,
                                             job, lfn, fileSize,
-                                            Transfer.moveFile ) )
+                                            Transfer.remoteRead ), startTime )
         return fractionForThisFile * penalty
 
     def timeForFileAtSite( self, lfn, startTime, job ):
@@ -97,10 +98,9 @@ class EventStore:
                 for link in networkLinks:
                     if link.siteTo() == site:
                         # fileSize in MB,  bandwidth in MB/s
-                        # TODO add in congestion
                         tTime = float(fileSize) / float( link.theBandwidth() )
                         # add any time needed to retry transfer
-                        tTime += timeForRetries( time, link.theQuality() )
+                        tTime += timeForRetries( tTime, link.theQuality() )
                         if tTime < time:
                             time = tTime
                             linkUsed = link
@@ -113,9 +113,9 @@ class EventStore:
             self.addSite( lfn, site )
 
         if linkUsed != None:
-            linkUsed.addTransfer( Transfer( startTime, startTime + time,
+            linkUsed.addTransfer( Transfer( startTime, (startTime + time),
                                             job, lfn, fileSize,
-                                            Transfer.remoteRead ) )
+                                            Transfer.moveFile ), startTime )
 
         return time
 
@@ -128,7 +128,7 @@ class Transfer:
     """ Class to represent a data transfer """
     """ can be either a normal point to point transfer at full wire """
     """ speed or a remote read while job is run """
-    remoteRead, moveFile = range(2)
+    ( remoteRead, moveFile ) = range(2)
     def __init__( self, start, end, job, lfn, size, tranType ):
         self.start = start
         self.end = end
@@ -139,6 +139,7 @@ class Transfer:
         self.rate = size / ( end - start )
         self.transferDone = 0
         self.lastChangeTime = start
+        self.maxRate = self.rate
 
     def done( self, time ):
         if time > self.end:
@@ -146,13 +147,34 @@ class Transfer:
         else:
             return False
 
-    def updateRate( self, time, newSpeed ):
+    def endTime( self ):
+        return self.end
+
+    def typeT( self ):
+        return self.type
+
+    def maxBandwidth( self ):
+        return self.maxRate
+
+    def bandwidth( self ):
+        return self.rate
+
+    def updateRate( self, newSpeed, time ):
         """ Update the rate of a transfer in progress """
-        self.transferDone = ( self.lastChangeTime - self.start ) * self.rate
-        newEnd = ( self.size - self.transferDone ) / newSpeed
+        if newSpeed > self.maxRate:
+            newSpeed = self.maxRate
+        self.transferDone += ( time - self.lastChangeTime ) * self.rate
+        self.lastChangeTime = time
+        newEnd = time + ( self.size - self.transferDone ) / newSpeed
         delay = newEnd - self.end
         self.end = newEnd
-        if self.type == remoteRead:
+        self.rate = newSpeed
+        if self.type == Transfer.remoteRead:
             self.job.readTimeChanged( delay )
         else:
             self.job.transferTimeChanged( delay )
+
+    def dump( self ):
+        print "Transfer: ( %d - %d ) %s (%dMB) %s rate %fMB/s ( %f max)" \
+            % ( self.start, self.end, self.lfn, self.size, self.type, self.rate,
+                self.maxRate )

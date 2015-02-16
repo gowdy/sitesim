@@ -114,9 +114,9 @@ def runSimulation( theStore ):
         if line[0]=='#':
             continue
         ( site, startTimeS, wallTimeS, cpuTimeS, lfns, percentageReadS ) = line.split()
-        startTime = int( startTimeS )
-        wallTime = int( wallTimeS )
-        cpuTime = int( cpuTimeS )
+        startTime = float( startTimeS )
+        wallTime = float( wallTimeS )
+        cpuTime = float( cpuTimeS )
         percentageRead = int( percentageReadS )
         theJob = Job.Job( site, lfns.split( ',' ), percentageRead,
                           wallTime, cpuTime, theStore )

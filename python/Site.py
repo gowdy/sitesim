@@ -6,6 +6,8 @@
 #
 ############################################################
 
+import Data
+
 class Link:
     """A class that represents the network link between sites"""
     def __init__( self, siteA, siteB, bandwidth, quality, latency ):
@@ -29,11 +31,63 @@ class Link:
         return self.quality
     def theLatency( self ):
         return self.latency
-    def addTransfer( self, transfer ):
+    def addTransfer( self, transfer, time ):
         self.transfersInProgress.append( transfer )
-        #self.usedBandwidth += transfer.bandwidthMax( self.latency )
+        self.usedBandwidth += transfer.bandwidth()
+
+    def slowDownTransfers( self, time ):
+        """ Using more bandwidth than available """
+        """ slow down site to site copies first """
+        """ if they reach the level of remote reads, slow those down too """
+        countCopies = 0
+        countRemote = 0
+        copyMaxBandwidth = 0
+        remoteMaxBandwidth = 0
+        copyBandwidth = 0
+        remoteBandwidth = 0
+        for transfer in self.transfersInProgress:
+            if transfer.typeT() == Data.Transfer.moveFile:
+                countCopies += 1
+                copyBandwidth += transfer.bandwidth()
+                if copyMaxBandwidth < transfer.bandwidth():
+                    copyMaxBandwidth = transfer.bandwidth()
+            else:
+                countRemote += 1
+                remoteBandwidth += transfer.bandwidth()
+                if remoteMaxBandwidth < transfer.bandwidth():
+                    remoteMaxBandwidth = transfer.bandwidth()
+        print self.bandwidth, self.usedBandwidth
+        # work out bandwidth per transfer if only reduce copy transfers
+        if countCopies > 0:
+            newBandwidth = ( self.bandwidth - remoteBandwidth ) / countCopies
+        else:
+            newBandwidth = 0
+        newBandwidthAll = self.bandwidth / ( countCopies + countRemote )
+        for transfer in self.transfersInProgress:
+            if newBandwidth < remoteMaxBandwidth or countCopies == 0:
+                # need to reduce all transfers
+                transfer.updateRate( newBandwidthAll, time )
+            elif transfer.typeT() == Data.Transfer.moveFile:
+                transfer.updateRate( newBandwidth, time )
+        self.usedBandwidth = self.bandwidth
+
+    def tryToSpeedUpTransfers( self, time ):
+        """ See if we can speed any up """
+        """ Increase all to their full speed and then reduce if too fast """
+        for transfer in self.transfersInProgress:
+            usedBandwidth = transfer.bandwidth()
+            maxBandwidth = transfer.maxBandwidth()
+            if usedBandwidth < maxBandwidth:
+                transfer.updateRate( maxBandwidth, time )
+                self.usedBandwidth += maxBandwidth - usedBandwidth
+        if self.usedBandwidth > self.bandwidth:
+            self.slowDownTransfers( time )
+
     def checkTransfers( self, time ):
         print "Time: %d" % time
+        if self.usedBandwidth > self.bandwidth:
+            self.slowDownTransfers( time )
+        someTransfersEndded = False
         for transfer in self.transfersInProgress:
             print "Transfer: %d ( %d - %d ) %s" % ( transfer.end - transfer.start,
                                                     transfer.start,
@@ -42,8 +96,10 @@ class Link:
             if transfer.done( time ):
                 self.transfersInProgress.remove( transfer )
                 print "Removed Transfer!"
-                #self.usedBandwidth -= transfer.bandwidthMax( self.latency )
-
+                self.usedBandwidth -= transfer.bandwidth()
+                someTransfersEndded = True
+        if someTransfersEndded:
+            self.tryToSpeedUpTransfers( time )
 
 class Site:
     """A representation of a Site"""
@@ -80,9 +136,9 @@ class Site:
         return self.batch.addJob( job )
 
     def pollSite( self, time ):
+        self.batch.startJobs( time )
         for link in self.network:
             link.checkTransfers( time )
-        self.batch.startJobs( time )
         self.batch.checkIfJobsFinished( time )
 
     def jobSummary( self ):

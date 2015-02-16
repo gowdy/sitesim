@@ -6,6 +6,7 @@
 
 import MonteCarlo
 import Data
+import sys
 
 def runTime( cpuTime ):
     """
@@ -62,13 +63,17 @@ class Job:
 
     def readTimeChanged( self, delay ):
         """ Work out what the CPU hit should be to account for delay """
+        if self.dataReadCPUHit == 0:
+            print "Shouldn't be called for jobs with no CPU hit already"
+            self.dump()
+            sys.exit( 1 )
         self.dataReadCPUHit = ( ( self.endTime + delay - self.startTime -
-                                  self.dataReadTime ) / self.runTime ) - 1.
+                                  self.dataReadyTime ) / self.runTime ) - 1.
         self.dataReadCPUHit *= 100.
         self.determineEndTime()
 
     def transferTimeChanged( self, delay ):
-        self.dataReadTime += delay
+        self.dataReadyTime += delay
         self.determineEndTime()
 
     def makeDataAvailable( self, start ):
