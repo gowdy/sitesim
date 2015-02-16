@@ -56,7 +56,6 @@ class Link:
                 remoteBandwidth += transfer.bandwidth()
                 if remoteMaxBandwidth < transfer.bandwidth():
                     remoteMaxBandwidth = transfer.bandwidth()
-        print self.bandwidth, self.usedBandwidth
         # work out bandwidth per transfer if only reduce copy transfers
         if countCopies > 0:
             newBandwidth = ( self.bandwidth - remoteBandwidth ) / countCopies
@@ -85,8 +84,6 @@ class Link:
 
     def checkTransfers( self, time ):
         print "Time: %d" % time
-        if self.usedBandwidth > self.bandwidth:
-            self.slowDownTransfers( time )
         someTransfersEndded = False
         for transfer in self.transfersInProgress:
             print "Transfer: %d ( %d - %d ) %s" % ( transfer.end - transfer.start,
@@ -98,6 +95,8 @@ class Link:
                 print "Removed Transfer!"
                 self.usedBandwidth -= transfer.bandwidth()
                 someTransfersEndded = True
+        if self.usedBandwidth > self.bandwidth:
+            self.slowDownTransfers( time )
         if someTransfersEndded:
             self.tryToSpeedUpTransfers( time )
 
