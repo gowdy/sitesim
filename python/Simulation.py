@@ -70,6 +70,17 @@ def setupSimulation( theStore ):
     print "Read in %d latency bins." % latencyBins
     latencyFile.close()
    
+    transferFile = open( "input/FileTransfer.txt", 'r' )
+    transferBins = 0
+    for line in transferFile:
+        if line[0]=='#':
+            continue
+        ( binStart, speed ) = line.split()
+        Data.addTransferBin( float(binStart), float(speed) )
+        transferBins += 1
+    print "Read in %d transfer bins." % transferBins
+    transferFile.close()
+
     setupJobEffMC()
 
 
