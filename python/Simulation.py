@@ -11,6 +11,7 @@ import sys
 import getopt
 import random
 
+debug=False
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -155,9 +156,16 @@ def main(argv=None):
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help"])
+            opts, args = getopt.getopt(argv[1:], "hd", ["help","debug"])
         except getopt.error, msg:
              raise Usage(msg)
+        # process options
+        for o, a in opts:
+            if o in ("-h", "--help"):
+                print __doc__
+                sys.exit(0)
+            if o in ("-d", "--debug"):
+                Simulation.debug = True
         theStore = Data.EventStore()
         setupSimulation( theStore )
         runSimulation( theStore )

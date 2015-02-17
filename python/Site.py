@@ -7,6 +7,7 @@
 ############################################################
 
 import Data
+import Simulation
 
 class Link:
     """A class that represents the network link between sites"""
@@ -83,16 +84,18 @@ class Link:
             self.slowDownTransfers( time )
 
     def checkTransfers( self, time ):
-        print "Time: %d" % time
         someTransfersEndded = False
         for transfer in self.transfersInProgress:
-            print "Transfer: %d ( %d - %d ) %s" % ( transfer.end - transfer.start,
-                                                    transfer.start,
-                                                    transfer.end,
-                                                    transfer.lfn )
+            if Simulation.debug:
+                print "Transfer: %d ( %d - %d ) %s" % \
+                    ( transfer.end - transfer.start,
+                      transfer.start, transfer.end,
+                      transfer.lfn )
             if transfer.done( time ):
                 self.transfersInProgress.remove( transfer )
-                print "Removed Transfer!"
+                if Simulation.debug:
+                    print "Removed Transfer!"
+                    transfer.dump()
                 self.usedBandwidth -= transfer.bandwidth()
                 someTransfersEndded = True
         if self.usedBandwidth > self.bandwidth:

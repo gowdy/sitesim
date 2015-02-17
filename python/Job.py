@@ -7,6 +7,7 @@
 import MonteCarlo
 import Data
 import sys
+import Simulation
 
 def runTime( cpuTime ):
     """
@@ -61,9 +62,11 @@ class Job:
         self.endTime = self.startTime \
                        + self.runTime * ( 1. + self.dataReadCPUHit / 100. ) \
                        + self.dataReadyTime
-        print "Job Delay(%d): transfer %d remote %d%%" % ( self.jobID,
-                                                           self.dataReadyTime,
-                                                           self.dataReadCPUHit )
+        if Simulation.debug:
+            print "Job Delay(%d): transfer %d remote %d%%" % \
+                ( self.jobID,
+                  self.dataReadyTime,
+                  self.dataReadCPUHit )
 
     def readTimeChanged( self, delay ):
         """ Work out what the CPU hit should be to account for delay """
