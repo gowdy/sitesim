@@ -17,6 +17,7 @@ def runTime( cpuTime ):
 class Job:
     """Description of a job in a batch system"""
     mc = None
+    jobID = 0
 
     def __init__( self, site, inputData, fractionRead, wallTime, cpuTime,
                   theStore ):
@@ -32,6 +33,8 @@ class Job:
         self.dataReadCPUHit = 0. # percentage hit in CPU time for remote reads
         self.theStore = theStore # link to event store information
         self.totalFileSize = 0
+        self.jobID = Job.jobID
+        Job.jobID += 1
         for file in self.inputData:
             self.totalFileSize+=self.theStore.sizeOf( file )
 
@@ -58,8 +61,9 @@ class Job:
         self.endTime = self.startTime \
                        + self.runTime * ( 1. + self.dataReadCPUHit / 100. ) \
                        + self.dataReadyTime
-        print "Job Delay: transfer %d remote %d%%" % ( self.dataReadyTime,
-                                                       self.dataReadCPUHit )
+        print "Job Delay(%d): transfer %d remote %d%%" % ( self.jobID,
+                                                           self.dataReadyTime,
+                                                           self.dataReadCPUHit )
 
     def readTimeChanged( self, delay ):
         """ Work out what the CPU hit should be to account for delay """
