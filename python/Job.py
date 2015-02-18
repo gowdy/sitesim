@@ -87,19 +87,19 @@ class Job:
         timeToStartTransfer = start
         for lfn in self.inputData:
             timeForFile = 99999
-            if Data.EventStore.transferIfCan:
+            if Simulation.transferIfCan:
                 timeForFile \
                     = self.theStore.timeForFileAtSite( lfn,
                                                        timeToStartTransfer,
                                                        self )
                 if timeForFile < 99999:
-                    if Data.EventStore.transferType == "Serial":
+                    if Simulation.transferType == "Serial":
                         self.dataReadyTime += timeForFile
                     else:
                         if self.dataReadyTime < timeForFile:
                             self.dataReadyTime = timeForFile
 
-            if timeForFile == 99999 or not Data.EventStore.transferIfCan:
+            if timeForFile == 99999 or not Simulation.transferIfCan:
                 self.dataReadCPUHit \
                     +=  self.theStore.nearestSiteCPUHit( lfn,
                                                          timeToStartTransfer,

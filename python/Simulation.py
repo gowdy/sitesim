@@ -11,7 +11,20 @@ import sys
 import getopt
 import random
 
+
+# Configuration variables
 debug=False
+# This variable is used currently to decide to keep files at
+# sites after a transfer for a job or not
+cacheMethod = "Keep"
+# Transfer files to local disk if possible
+#transferIfCan = False
+transferIfCan = True
+# Job will transfer files in serial (wait for all transfers) or
+# parrallel (only longest transfer time considered)
+transferType = "Serial"
+#transferType = "Parrallel"
+
 
 class Usage(Exception):
     def __init__(self, msg):

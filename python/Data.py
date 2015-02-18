@@ -1,4 +1,5 @@
 import Site
+import Simulation
 import BinnedData
 import random
 import sys
@@ -19,13 +20,6 @@ def addTransferBin( binStart, speed ):
     EventStore.fileTransfer.addBin( binStart, speed )
 
 class EventStore:
-    # This variable is used currently to decide to keep files at
-    # sites after a transfer for a job or not
-    cacheMethod = "Keep"
-    #transferIfCan = False
-    transferIfCan = True
-    transferType = "Serial"
-    #transferType = "Parrallel"
     remoteRead = BinnedData.BinnedData()
     fileTransfer = BinnedData.BinnedData()
 
@@ -115,7 +109,7 @@ class EventStore:
             print "File transfer failed!!"
             sys.exit( 1 )
 
-        if EventStore.cacheMethod == "Keep":
+        if Simulation.cacheMethod == "Keep":
             self.addSite( lfn, site )
 
         if linkUsed != None:
