@@ -71,10 +71,8 @@ class EventStore:
         #scale by size of file compared to all files
         fileSize = self.sizeOf( lfn )
         fractionForThisFile = fileSize / job.theTotalFileSize()
-        # TODO add congestion check
         endTime = startTime + fractionForThisFile * \
                   ( 1. + penalty / 100. ) * job.theRunTime()
-        print startTime, fractionForThisFile, penalty, job.theRunTime()
         if linkUsed != None:
             linkUsed.addTransfer( Transfer( startTime, endTime,
                                             job, lfn, fileSize,
