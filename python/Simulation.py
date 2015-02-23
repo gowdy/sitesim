@@ -128,7 +128,7 @@ def setupJobEffMC():
 
 def addNetwork( siteDict, fromSite, toSite, bandwidth, quality, latency ):
     siteDict[fromSite].addLink( toSite, bandwidth, quality, latency )
-    siteDict[toSite].addLink( fromSite, bandwidth, quality, latency )
+    #siteDict[toSite].addLink( fromSite, bandwidth, quality, latency )
 
 def runSimulation( theStore ):
     jobsFile = open( "input/Jobs.txt", 'r' )
