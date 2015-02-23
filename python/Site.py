@@ -19,7 +19,14 @@ class Link:
         self.quality = quality
         self.latency = latency
         self.transfersInProgress = []
+        self.maxBandwidthUsed = 0
+        self.transfersStarted = 0
 
+
+    def dump( self ):
+        print "Link: From %s to %s. %dMB/s (max used %dMB/s). Latency %dms. Quality %f. %d transfers started." \
+            % ( self.siteA, self.siteB, self.bandwidth, self.maxBandwidthUsed,
+                self.latency, self.quality, self.transfersStarted )
     def siteFrom( self ):
         return self.siteA
     def siteTo( self ):
@@ -34,7 +41,10 @@ class Link:
         return self.latency
     def addTransfer( self, transfer, time ):
         self.transfersInProgress.append( transfer )
+        self.transfersStarted += 1
         self.usedBandwidth += transfer.bandwidth()
+        if self.usedBandwidth > self.maxBandwidthUsed:
+            self.maxBandwidthUsed = self.usedBandwidth
 
     def slowDownTransfers( self, time ):
         """ Using more bandwidth than available """
@@ -144,9 +154,10 @@ class Site:
         self.batch.checkIfJobsFinished( time )
 
     def jobSummary( self ):
-        print "Jobs: %d queued %d running %d done" % \
+        print "Jobs: %d queued %d running (%d max) %d done" % \
         ( self.batch.numberOfQueuedJobs(),
           self.batch.numberOfRunningJobs(),
+          self.batch.maxNumberRunningJobs(),
           self.batch.numberOfDoneJobs() )
         for job in self.batch.rJobs:
             print "Job: cputime %d data time %d" % ( job.cpuTime, job.dataReadyTime )
@@ -161,6 +172,7 @@ class Batch:
         self.qJobs=[]
         self.rJobs=[]
         self.dJobs=[]
+        self.maxRunningJobs = 0
 
     def startJobs( self, time ):
         tempList = []
@@ -173,6 +185,8 @@ class Batch:
                 return
 
     def checkIfJobsFinished( self, timeNow ):
+        if len( self.rJobs ) > self.maxRunningJobs:
+            self.maxRunningJobs = len( self.rJobs )
         tempList = []
         for job in self.rJobs:
             tempList.append( job )
@@ -206,6 +220,9 @@ class Batch:
 
     def numberOfDoneJobs( self ):
         return len( self.dJobs )
+
+    def maxNumberRunningJobs( self ):
+        return self.maxRunningJobs
 
     def numberOfJobs( self ):
         return len( self.rJobs ) + len( self.qJobs ) + len( self.dJobs )

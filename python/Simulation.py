@@ -160,7 +160,9 @@ def runSimulation( theStore ):
 
 def printResults( theStore ):
     for site in Site.Site.sites.values():
-        print site.name, site.network
+        print site.name
+        for link in site.network:
+            link.dump()
         print "%fTB of %fTB used." % ( site.diskUsed, site.disk )
         site.jobSummary()
 
