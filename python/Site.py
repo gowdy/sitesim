@@ -20,6 +20,7 @@ class Link:
         self.latency = latency
         self.transfersInProgress = []
         self.maxBandwidthUsed = 0
+        self.stillToSlowDown = False
         self.transfersStarted = 0
 
 
@@ -45,6 +46,7 @@ class Link:
         self.usedBandwidth += transfer.bandwidth()
         if self.usedBandwidth > self.maxBandwidthUsed:
             self.maxBandwidthUsed = self.usedBandwidth
+            self.stillToSlowDown = True
 
     def slowDownTransfers( self, time ):
         """ Using more bandwidth than available """
@@ -80,6 +82,9 @@ class Link:
             elif transfer.typeT() == Data.Transfer.moveFile:
                 transfer.updateRate( newBandwidth, time )
         self.usedBandwidth = self.bandwidth
+        if self.usedBandwidth > self.maxBandwidthUsed or self.stillToSlowDown:
+            self.maxBandwidthUsed = self.usedBandwidth
+            self.stillToSlowDown = False
 
     def tryToSpeedUpTransfers( self, time ):
         """ See if we can speed any up """
