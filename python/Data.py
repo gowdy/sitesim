@@ -61,12 +61,14 @@ class EventStore:
         if site in sitesWithFile:
             return 0.
         bestLatency = 9999
-        networkLinks = Site.Site.sites[site].network
-        for link in networkLinks:
-            latency = link.theLatency()
-            if latency < bestLatency and link.siteTo() in sitesWithFile:
-                bestLatency = latency
-                linkUsed = link
+        for sourceSite in sitesWithFile:
+            networkLinks = Site.Site.sites[sourceSite].network
+            for link in networkLinks:
+                if link.siteTo() == site:
+                    latency = link.theLatency()
+                    if latency < bestLatency:
+                        bestLatency = latency
+                        linkUsed = link
         penalty = EventStore.remoteRead.lookup( bestLatency )
         #scale by size of file compared to all files
         fileSize = self.sizeOf( lfn )
