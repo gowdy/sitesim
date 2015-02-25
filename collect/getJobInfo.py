@@ -65,6 +65,8 @@ for job in theJobs:
     #    print key
     #sys.exit(0)    
 
+
+print "Created %d job records." % len(jobs)
 outputFile = open( "Jobs_efficiency.txt", "w" )
 
 cpuEfficiencyList = []
