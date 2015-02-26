@@ -82,7 +82,9 @@ filesFile = open( "Data.txt", "w" )
 eventStore.write( "#LFN              Site\n" )
 filesFile.write( "#LFN             Size (MB)\n" )
 for file in theFiles.keys():
-    if file.startswith("/store/user"):
+    if file.startswith("/store/user") \
+       or file.startswith("/store/group") \
+       or file.startswith("/store/test"):
         eventStore.write( "%s %s\n" % ( file, theFiles[file] ) )
         filesFile.write( "%s %s\n" % ( file, 1024 ) ) # assume 1GB file
     else:
@@ -93,3 +95,18 @@ for file in theFiles.keys():
             eventStore.write( "%s %s\n" % ( file, site ) )
 eventStore.close()
 filesFile.close()
+
+def debugLFNPath( theFiles ):
+    path1 = {}
+    path2 = {}
+    for fe in theFiles.keys():
+        elements = fe.split('/')
+        if len(elements) > 1:
+            path1[elements[1]] = True
+            path2[elements[2]] = True
+        else:
+            print fe
+    print "===================================="
+    print path1
+    print path2
+    sys.exit(1)
