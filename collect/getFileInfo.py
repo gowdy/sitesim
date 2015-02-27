@@ -23,11 +23,13 @@ def getSites( lfn ):
 
     try:
         returnedStream = urllib2.urlopen( urllib2.Request( "https://cmsweb.cern.ch/phedex/datasvc/json/prod/filereplicas?lfn=%s" % lfn, None, { "Accept" : "application/json" } ) )
-    except URLError as e:
-        if e==503:
+    except urllib2.HTTPError, e:
+        if e.code==503:
             print "503 Error, retry in 10s"
             time.sleep( 10 )
             return getSites( lfn )
+        print "HTTPError", e
+        sys.exit( 1 )
 
     theBlocks = json.load( returnedStream )["phedex"]["block"]
     if len( theBlocks ) != 1:
