@@ -67,9 +67,8 @@ def getSize( lfn ):
     return theFile['size']
 
 
-def getListOfFiles():
+def getListOfFiles( theFiles ):
     theJobInfo = open( "input/Jobs.txt" )
-    theFiles = {}
     for line in theJobInfo:
         if line[0] == '#':
             continue
@@ -121,9 +120,18 @@ def writeListOfFiles( theFiles ):
         listStore.write( "%s %s\n" % ( file, theFiles[ file ] ) )
     listStore.close()
 
+def readListOfFiles( theFiles ):
+    listStore = open( "FileSiteList.txt", "r" )
+    for line in listStore:
+        ( file, site ) = line.split()
+        theFiles[ file ] = site
+    listStore.close()
+
 def main( argv=None ):
-    theFiles = getListOfFiles()
-    writeListOfFiles( theFiles )
+    theFiles = {}
+    #getListOfFiles( theFiles )
+    #writeListOfFiles( theFiles )
+    readListOfFiles( theFiles )
     getFileInformation( theFiles )
 
 if __name__ == "__main__":
