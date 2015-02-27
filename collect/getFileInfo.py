@@ -66,35 +66,39 @@ def getSize( lfn ):
     theFile = theFiles[0]
     return theFile['size']
 
-theJobInfo = open( "input/Jobs.txt" )
-theFiles = {}
-for line in theJobInfo:
-    if line[0] == '#':
-        continue
-    (site,b,c,d,files,g) = line.split()
-    for file in files.split(','):
-        theFiles[ file ] = site
-theJobInfo.close()
+
+def getListOfFiles():
+    theJobInfo = open( "input/Jobs.txt" )
+    theFiles = {}
+    for line in theJobInfo:
+        if line[0] == '#':
+            continue
+        (site,b,c,d,files,g) = line.split()
+        for file in files.split(','):
+            theFiles[ file ] = site
+    theJobInfo.close()
+    return theFiles
 
 
-eventStore = open( "EventStore.txt", "w" )
-filesFile = open( "Data.txt", "w" )
-eventStore.write( "#LFN              Site\n" )
-filesFile.write( "#LFN             Size (MB)\n" )
-for file in theFiles.keys():
-    if file.startswith("/store/user") \
-       or file.startswith("/store/group") \
-       or file.startswith("/store/test"):
-        eventStore.write( "%s %s\n" % ( file, theFiles[file] ) )
-        filesFile.write( "%s %s\n" % ( file, 1024 ) ) # assume 1GB file
-    else:
-        sites = getSites( file )
-        size = getSize( file )
-        filesFile.write( "%s %s\n" % ( file, size/1024/1024 ) )
-        for site in sites:
-            eventStore.write( "%s %s\n" % ( file, site ) )
-eventStore.close()
-filesFile.close()
+def getFileInformation( theFiles ):
+    eventStore = open( "EventStore.txt", "w" )
+    filesFile = open( "Data.txt", "w" )
+    eventStore.write( "#LFN              Site\n" )
+    filesFile.write( "#LFN             Size (MB)\n" )
+    for file in theFiles.keys():
+        if file.startswith("/store/user") \
+           or file.startswith("/store/group") \
+           or file.startswith("/store/test"):
+            eventStore.write( "%s %s\n" % ( file, theFiles[file] ) )
+            filesFile.write( "%s %s\n" % ( file, 1024 ) ) # assume 1GB file
+        else:
+            sites = getSites( file )
+            size = getSize( file )
+            filesFile.write( "%s %s\n" % ( file, size/1024/1024 ) )
+            for site in sites:
+                eventStore.write( "%s %s\n" % ( file, site ) )
+    eventStore.close()
+    filesFile.close()
 
 def debugLFNPath( theFiles ):
     path1 = {}
@@ -110,3 +114,17 @@ def debugLFNPath( theFiles ):
     print path1
     print path2
     sys.exit(1)
+
+def writeListOfFiles( theFiles ):
+    listStore = open( "FileSiteList.txt", "w" )
+    for file in theFiles.keys():
+        listStore.write( "%s %s\n" % ( file, theFiles[ file ] ) )
+    listStore.close()
+
+def main( argv=None ):
+    theFiles = getListOfFiles()
+    writeListOfFiles( theFiles )
+    getFileInformation( theFiles )
+
+if __name__ == "__main__":
+    sys.exit(main())
