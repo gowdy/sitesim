@@ -21,8 +21,14 @@ class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
 def getSites( lfn ):
     #opener = urllib2.build_opener(HTTPSClientAuthHandler('/home/Stephen/.globus/userkey.pem', '/home/Stephen/.globus/usercert.pem') )
 
-    returnedStream = urllib2.urlopen( urllib2.Request( "https://cmsweb.cern.ch/phedex/datasvc/json/prod/filereplicas?lfn=%s" % lfn, None, { "Accept" : "application/json" } ) )
-    
+    try:
+        returnedStream = urllib2.urlopen( urllib2.Request( "https://cmsweb.cern.ch/phedex/datasvc/json/prod/filereplicas?lfn=%s" % lfn, None, { "Accept" : "application/json" } ) )
+    except URLError as e:
+        if e==503:
+            print "503 Error, retry in 10s"
+            time.sleep( 10 )
+            return getSites( lfn )
+
     theBlocks = json.load( returnedStream )["phedex"]["block"]
     if len( theBlocks ) != 1:
         print "Expected exactly one block."
