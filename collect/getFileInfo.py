@@ -29,6 +29,7 @@ def getSites( lfn ):
             time.sleep( 10 )
             return getSites( lfn )
         print "HTTPError", e
+        print lfn
         sys.exit( 1 )
 
     theBlocks = json.load( returnedStream )["phedex"]["block"]
@@ -95,6 +96,7 @@ def getFileInformation( theFiles ):
     for file in theFiles.keys():
         if file.startswith("/store/user") \
            or file.startswith("/store/group") \
+           or file.startswith("/store/results") \
            or file.startswith("/store/test"):
             eventStore.write( "%s %s\n" % ( file, theFiles[file] ) )
             filesFile.write( "%s %s\n" % ( file, 1024 ) ) # assume 1GB file
@@ -135,11 +137,24 @@ def readListOfFiles( theFiles ):
         theFiles[ file ] = site
     listStore.close()
 
+def removeAlreadyDoneFiles( theFiles ):
+    doneAlready = open( "Data.txt.start", "r" )
+    print "Files contains %d entries." % len( theFiles )
+    print "Remove files already done."
+    for line in doneAlready:
+        if line[0]=='#':
+            continue
+        ( file, size ) = line.split()
+        del theFiles[ file ]
+    doneAlready.close()
+    print "Files contains %d entries." % len( theFiles )
+
 def main( argv=None ):
     theFiles = {}
     #getListOfFiles( theFiles )
     #writeListOfFiles( theFiles )
     readListOfFiles( theFiles )
+    removeAlreadyDoneFiles( theFiles )
     getFileInformation( theFiles )
 
 if __name__ == "__main__":
