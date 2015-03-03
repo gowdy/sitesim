@@ -70,6 +70,8 @@ def setupSimulation( theStore ):
         ( lfn, site ) = line.split()
         theStore.addSite( lfn, site )
         locations+=1
+        if locations % 1000 == 0:
+            print "Done %d..." % locations
     print "Read in %d locations." % locations
     locationsFile.close()
 
