@@ -3,6 +3,7 @@ import Simulation
 import BinnedData
 import random
 import sys
+import cPickle
 
 def timeForRetries( transferTime, quality ):
     time = 0
@@ -26,7 +27,19 @@ class EventStore:
     def __init__( self ):
         self.catalogue = {}
         self.files = []
-        
+
+    def save( self, fileName ):
+        output = open( fileName, 'wb' )
+        cPickle.dump( self.catalogue, output )
+        cPickle.dump( self.files, output )
+        output.close()
+
+    def load( self, fileName ):
+        input = open( fileName, 'rb' )
+        self.catalogue = cPickle.load( input )
+        self.files = cPickle.load( input )
+        input.close()
+
     def addFile( self, lfn, size ):
         self.files.append( (lfn, size ) )
         self.catalogue[ lfn ] = []
@@ -133,8 +146,10 @@ class Transfer:
     """ speed or a remote read while job is run """
     ( remoteRead, moveFile ) = range(2)
     def __init__( self, start, end, job, lfn, size, tranType ):
-        if end < start:
-            print "Transfer ends before it starts!!"
+        if end <= start:
+            print "Transfer ends before or when it starts!!"
+            print start, end, lfn, size, tranType
+            print job.dump()
             sys.exit(1)
         self.start = start
         self.end = end

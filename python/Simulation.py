@@ -24,7 +24,8 @@ transferIfCan = True
 # parrallel (only longest transfer time considered)
 transferType = "Serial"
 #transferType = "Parrallel"
-
+# Read eventstore from pickle file
+eventStoreInPickle = False
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -53,27 +54,32 @@ def setupSimulation( theStore ):
     print "Read in %d network links." % links
     networkFile.close()
 
-    filesFile = open( "input/Data.txt", 'r' )
-    for line in filesFile:
-        if line[0]=='#':
-            continue
-        ( lfn, size ) = line.split()
-        theStore.addFile( lfn, float( size ) )
-    print "Read in %d files." % theStore.size()
-    filesFile.close()
+    if eventStoreInPickle:
+        theStore.load( "input/EventStore.pkl" )
+    else:
+        filesFile = open( "input/Data.txt", 'r' )
+        for line in filesFile:
+            if line[0]=='#':
+                continue
+            ( lfn, size ) = line.split()
+            theStore.addFile( lfn, float( size ) )
+        print "Read in %d files." % theStore.size()
+        filesFile.close()
 
-    locationsFile = open( "input/EventStore.txt", 'r' )
-    locations = 0
-    for line in locationsFile:
-        if line[0]=='#':
-            continue
-        ( lfn, site ) = line.split()
-        theStore.addSite( lfn, site )
-        locations+=1
-        if locations % 1000 == 0:
-            print "Done %d..." % locations
-    print "Read in %d locations." % locations
-    locationsFile.close()
+        locationsFile = open( "input/EventStore.txt", 'r' )
+        locations = 0
+        for line in locationsFile:
+            if line[0]=='#':
+                continue
+            ( lfn, site ) = line.split()
+            theStore.addSite( lfn, site )
+            locations+=1
+            if locations % 1000 == 0:
+                print "Done %d..." % locations
+        print "Read in %d locations." % locations
+        locationsFile.close()
+
+        theStore.save( "input/EventStore.pkl" )
 
     latencyFile = open( "input/RemoteRead.txt", 'r' )
     latencyBins = 0
