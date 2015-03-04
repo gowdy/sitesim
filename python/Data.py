@@ -107,6 +107,9 @@ class EventStore:
 
         if time == 99999:
             print "File transfer failed!!"
+            print lfn
+            print job
+            print startTime
             sys.exit( 1 )
 
         if Simulation.cacheMethod == "Keep":
