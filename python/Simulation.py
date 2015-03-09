@@ -25,7 +25,7 @@ transferIfCan = True
 transferType = "Serial"
 #transferType = "Parrallel"
 # Read eventstore from pickle file
-eventStoreInPickle = False
+eventStoreInPickle = True
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -56,6 +56,8 @@ def setupSimulation( theStore ):
 
     if eventStoreInPickle:
         theStore.load( "input/EventStore.pkl" )
+        print "Read in %d files." % theStore.size()
+        print "Read in %d locations." % theStore.numLocations()
     else:
         filesFile = open( "input/Data.txt", 'r' )
         for line in filesFile:

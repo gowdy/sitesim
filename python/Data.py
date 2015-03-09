@@ -53,6 +53,12 @@ class EventStore:
     def size( self ):
         return len( self.catalogue )
 
+    def numLocations( self ):
+        locations = 0
+        for (lfn, size) in self.files:
+            locations += len( self.catalogue[ lfn ] )
+        return locations
+
     def sizeOf( self, lfnToFind ):
         for (lfn,size) in self.files:
             if lfn==lfnToFind:
@@ -146,8 +152,8 @@ class Transfer:
     """ speed or a remote read while job is run """
     ( remoteRead, moveFile ) = range(2)
     def __init__( self, start, end, job, lfn, size, tranType ):
-        if end <= start:
-            print "Transfer ends before or when it starts!!"
+        if end < start:
+            print "Transfer ends before it starts!!"
             print start, end, lfn, size, tranType
             print job.dump()
             sys.exit(1)
@@ -157,7 +163,10 @@ class Transfer:
         self.lfn = lfn
         self.size = size
         self.type = tranType
-        self.rate = size / ( end - start )
+        if size == 0:
+            self.rate = 0.
+        else:
+            self.rate = size / ( end - start )
         self.transferDone = 0
         self.lastChangeTime = start
         self.maxRate = self.rate
