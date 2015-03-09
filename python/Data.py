@@ -40,7 +40,7 @@ class EventStore:
         self.files = cPickle.load( input )
         input.close()
         for (lfn, size) in self.files:
-            for sites in self.catalogue[ lfn ]:
+            for site in self.catalogue[ lfn ]:
                 Site.Site.sites[ site ].addFileOfSize( size / 1024 / 1024 )
 
     def addFile( self, lfn, size ):
