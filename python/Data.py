@@ -39,7 +39,7 @@ class EventStore:
         self.catalogue = cPickle.load( input )
         self.files = cPickle.load( input )
         input.close()
-        for ( lfn, size ) in self.files:
+        for ( lfn, size ) in self.files.iteritems():
             for site in self.catalogue[ lfn ]:
                 Site.Site.sites[ site ].addFileOfSize( size / 1024 / 1024 )
 
@@ -58,7 +58,7 @@ class EventStore:
 
     def numLocations( self ):
         locations = 0
-        for (lfn, size) in self.files:
+        for (lfn, size) in self.files.iteritems():
             locations += len( self.catalogue[ lfn ] )
         return locations
 
