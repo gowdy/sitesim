@@ -26,7 +26,7 @@ class EventStore:
 
     def __init__( self ):
         self.catalogue = {}
-        self.files = []
+        self.files = {}
 
     def save( self, fileName ):
         output = open( fileName, 'wb' )
@@ -39,12 +39,12 @@ class EventStore:
         self.catalogue = cPickle.load( input )
         self.files = cPickle.load( input )
         input.close()
-        for (lfn, size) in self.files:
+        for ( lfn, size ) in self.files:
             for site in self.catalogue[ lfn ]:
                 Site.Site.sites[ site ].addFileOfSize( size / 1024 / 1024 )
 
     def addFile( self, lfn, size ):
-        self.files.append( (lfn, size ) )
+        self.files[ lfn ] = size
         self.catalogue[ lfn ] = []
 
     def addSite( self, lfn, site ):
@@ -63,12 +63,7 @@ class EventStore:
         return locations
 
     def sizeOf( self, lfnToFind ):
-        for (lfn,size) in self.files:
-            if lfn==lfnToFind:
-                return size
-        print "File not found while trying to determine size."
-        print lfnToFind
-        sys.exit(1)
+        return self.files[ lfnToFind ]
 
     def removeFile( self, site, lfn ):
         self.catalogue[ lfn ].remove( site )
