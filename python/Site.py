@@ -192,12 +192,9 @@ class Batch:
     def checkIfJobsFinished( self, timeNow ):
         if len( self.rJobs ) > self.maxRunningJobs:
             self.maxRunningJobs = len( self.rJobs )
-        tempList = []
-        for job in self.rJobs:
-            tempList.append( job )
+        tempList = [ job for job in self.rJobs if job.endTime < timeNow ]
         for job in tempList:
-            if job.isFinished( timeNow ):
-                self.endJob( job )
+            self.endJob( job )
 
     def addJob( self, job ):
         self.qJobs.append( job )
