@@ -156,6 +156,9 @@ def runSimulation( theStore ):
         theJob = Job.Job( site, lfns.split( ',' ), percentageRead,
                           wallTime, cpuTime, theStore )
         jobIndex+=1
+        if jobIndex>=29800:
+            print site
+            theJob.dump()
         for theSite in Site.Site.sites.values():
             if theSite.name == site:
                 theSite.submit( theJob )
