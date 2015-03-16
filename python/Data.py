@@ -7,8 +7,11 @@ import cPickle
 
 def timeForRetries( transferTime, quality ):
     time = 0
-    while random.random() > quality and time < 601.:
-        time += transferTime * random.random()
+    if quality == 0.:
+        time = 99999.
+    else:
+        while random.random() > quality and time < 601.:
+            time += transferTime * random.random()
     # After ten minutes of retries give up on this link
     if time > 600.:
         time = 99999.
