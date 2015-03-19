@@ -1,4 +1,4 @@
 # bin_start (latency mc)	CPU Efficiency Hit
 0 0
-1 2.5
-50	10
+1 5
+50	20
