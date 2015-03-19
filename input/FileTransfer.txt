@@ -1,5 +1,5 @@
 # bin_start (latency mc)	MaxTransferSpeed (MB/s)
-0 20000
-1 2000
-50	200
-100	100
+0 5000
+1 500
+50	50
+100	25
