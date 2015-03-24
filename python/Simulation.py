@@ -190,7 +190,7 @@ def main(argv=None):
                 print __doc__
                 sys.exit(0)
             if o in ("-d", "--debug"):
-                Simulation.debug = True
+                debug = True
         theStore = Data.EventStore()
         setupSimulation( theStore )
         runSimulation( theStore )
