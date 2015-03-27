@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Simulation
 
 Main simulation control code
