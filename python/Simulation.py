@@ -142,10 +142,23 @@ def addNetwork( siteDict, fromSite, toSite, bandwidth, quality, latency ):
     #siteDict[toSite].addLink( fromSite, bandwidth, quality, latency )
 
 def runSimulation( theStore ):
+    firstJobStart = 0
+    lastJobStart = 0
     jobsFile = open( "input/Jobs.txt", 'r' )
-    print "About to read and simulate %d jobs..." % len( jobsFile.readlines() )
+    numberOfLines = len( jobsFile.readlines() )
+    print "About to read and simulate %d jobs..." % numberOfLines
     jobsFile.seek( 0 )
+    # figure out when to start and end the simulation
     jobIndex=0
+    for line in jobsFile:
+        jobIndex+=1
+        if line[0]=='#':
+            continue
+        if jobIndex < 10 and firstJobStart == 0:
+            firstJobStart = int( line.split()[1] )
+        if jobIndex == numberOfLines:
+            lastJobStart = int( line.split()[1] )
+    jobsFile.seek( 0 )
     for line in jobsFile:
         if line[0]=='#':
             continue
@@ -160,9 +173,20 @@ def runSimulation( theStore ):
         for theSite in Site.Site.sites.values():
             if theSite.name == site:
                 theSite.submit( theJob )
-            theSite.pollSite( startTime )
         if jobIndex%100==0:
-            print "Done %d jobs." % jobIndex
+            print "Added %d jobs." % jobIndex
+
+    # run from start for double time recorded for jobs
+    theTime = firstJobStart
+    runTill = ( lastJobStart - firstJobStart ) * 2 + firstJobStart
+    while theTime < runTill:
+        for theSite in Site.Site.sites.values():
+             theSite.pollSite( theTime )
+        theTime += 300
+        print theTime
+        if ( theTime - firstJobStart ) % 84600 == 0:
+            print "Simulated %d days." % ( theTime - firstJobStart ) / 84600
+
     # all jobs done, get sites to finish jobs
     futureTime = 1600000000.
     for theSite in Site.Site.sites.values():
