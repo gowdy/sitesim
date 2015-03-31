@@ -185,7 +185,7 @@ def runSimulation( theStore ):
         theTime += 300
         print theTime
         if ( theTime - firstJobStart ) % 84600 == 0:
-            print "Simulated %d days." % ( theTime - firstJobStart ) / 84600
+            print "Simulated %d days." % ( ( theTime - firstJobStart ) / 84600 )
 
     # all jobs done, get sites to finish jobs
     futureTime = 1600000000.
