@@ -180,14 +180,14 @@ class Batch:
         self.maxRunningJobs = 0
 
     def startJobs( self, time ):
-        tempList = []
-        for job in self.qJobs:
-            tempList.append( job )
-        for job in tempList:
-            if len( self.rJobs ) < self.cores:
-                self.runJob( job, time )
-            else:
-                return
+        runningJobs = len( self.rJobs )
+        if runningJobs < self.cores:
+            tempList = self.qJobs[ : ( self.cores - runningJobs ) ]
+            for job in tempList:
+                job.start( time )
+            self.rJobs.extend( tempList )
+            self.qJobs = self.qJobs[ ( self.cores - runningJobs ) : ]
+        return
 
     def checkIfJobsFinished( self, timeNow ):
         if len( self.rJobs ) > self.maxRunningJobs:
@@ -198,11 +198,6 @@ class Batch:
 
     def addJob( self, job ):
         self.qJobs.append( job )
-
-    def runJob( self, job, time ):
-        job.start( time )
-        self.rJobs.append( job )
-        self.qJobs.remove( job )
 
     def endJob( self, job ):
         self.rJobs.remove( job )
