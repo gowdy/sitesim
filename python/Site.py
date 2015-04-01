@@ -122,7 +122,8 @@ class Site:
     """A representation of a Site"""
     sites={} # all the sites
 
-    def __init__( self, name, disk, cores, bandwidth):
+    def __init__( self, id, name, disk, cores, bandwidth):
+        self.id = id # integer
         self.name = name # string name
         self.disk = disk # size in TB
         self.diskUsed = 0.

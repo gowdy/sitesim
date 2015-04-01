@@ -11,7 +11,7 @@ import Site, Data, Job, MonteCarlo
 import sys
 import getopt
 import random
-
+import sqlite3
 
 # Configuration variables
 debug=False
@@ -32,14 +32,19 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-def setupSimulation( theStore ):
+def setupSimulation( theStore, database ):
+    id = 0
     sitesFile = open( "input/Sites.txt", 'r' )
     for line in sitesFile:
         if line[0]=='#':
             continue
         ( name, space, cores, bandwidth ) = line.split()
-        Site.Site.sites[name] = Site.Site( name, float(space), int(cores),
+        Site.Site.sites[name] = Site.Site( id, name, float(space), int(cores),
                                            float(bandwidth) )
+        database.execute( "INSERT INTO Sites VALUES(%d,'%s',%f,%d,%f)"
+                          % ( id, name, float(space), int(cores),
+                              float(bandwidth) ) )
+        id+=1
     print "Read in %d sites." % len(Site.Site.sites)
     sitesFile.close()
 
@@ -182,6 +187,7 @@ def runSimulation( theStore ):
     while theTime < runTill:
         for theSite in Site.Site.sites.values():
              theSite.pollSite( theTime )
+             print "%s %d" % ( theSite.name, theSite.batch.numberOfJobs() )
         theTime += 300
         print theTime
         if ( theTime - firstJobStart ) % 84600 == 0:
@@ -201,12 +207,25 @@ def printResults( theStore ):
         print "%fTB of %fTB used." % ( site.diskUsed, site.disk )
         site.jobSummary()
 
+def setupDatabase( databaseName ):
+    con = sqlite3.connect( databaseName )
+
+    cur = con.cursor()
+    cur.executescript('''DROP TABLE IF EXISTS Sites;
+                         DROP TABLE IF EXISTS Jobs;''')
+    cur.execute("CREATE TABLE Sites(Id INT PRIMARY KEY, Name TEXT, Disk FLOAT, Cores INT,Bandwidth FLOAT)")
+    cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, SimTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT )")
+
+    con.commit()
+    return con
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "hd", ["help","debug"])
+            opts, args = getopt.getopt( argv[1:], "hd",
+                                        ["help","debug","output="])
         except getopt.error, msg:
              raise Usage(msg)
         # process options
@@ -216,8 +235,14 @@ def main(argv=None):
                 sys.exit(0)
             if o in ("-d", "--debug"):
                 debug = True
+            if o in ("--output"):
+                databaseName = a
         theStore = Data.EventStore()
-        setupSimulation( theStore )
+        database = setupDatabase( databaseName )
+        setupSimulation( theStore, database.cursor() )
+        database.commit()
+        database.close()
+        sys.exit(0)
         runSimulation( theStore )
         printResults( theStore )
     except Usage, err:
