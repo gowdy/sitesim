@@ -153,11 +153,16 @@ class Site:
     def submit( self, job ):
         return self.batch.addJob( job )
 
-    def pollSite( self, time ):
+    def pollSite( self, time, database ):
         self.batch.startJobs( time )
         for link in self.network:
             link.checkTransfers( time )
         self.batch.checkIfJobsFinished( time )
+        database.execute( "INSERT INTO SitesBatch VALUES( %d,%d,%d,%d,%d )"
+                          % (self.id, time,
+                             self.batch.numberOfQueuedJobs(),
+                             self.batch.numberOfRunningJobs(),
+                             self.batch.numberOfDoneJobs() ) )
 
     def jobSummary( self ):
         print "Jobs: %d queued %d running (%d max) %d done" % \

@@ -146,7 +146,7 @@ def addNetwork( siteDict, fromSite, toSite, bandwidth, quality, latency ):
     siteDict[fromSite].addLink( toSite, bandwidth, quality, latency )
     #siteDict[toSite].addLink( fromSite, bandwidth, quality, latency )
 
-def runSimulation( theStore ):
+def setupJobs( theStore, database ):
     firstJobStart = 0
     lastJobStart = 0
     jobsFile = open( "input/Jobs.txt", 'r' )
@@ -174,20 +174,26 @@ def runSimulation( theStore ):
         percentageRead = int( percentageReadS )
         theJob = Job.Job( site, lfns.split( ',' ), percentageRead,
                           wallTime, cpuTime, theStore )
-        jobIndex+=1
         for theSite in Site.Site.sites.values():
             if theSite.name == site:
                 theSite.submit( theJob )
-        if jobIndex%100==0:
-            print "Added %d jobs." % jobIndex
+                database.execute( "INSERT INTO Jobs VALUES(%d,%d,%f,%f,%f,%d,%d,%f,%f)"
+                          % ( theJob.jobID, theSite.id, wallTime, cpuTime,
+                              theJob.theRunTime(), 0, 0, 0., 0. ) )
+        if theJob.jobID%100==0:
+            print "Added %d jobs." % theJob.jobID
+    jobsFile.close()
+    return ( firstJobStart, lastJobStart )
 
+def runSimulation( theStore, firstJobStart, lastJobStart, database ):
     # run from start for double time recorded for jobs
     theTime = firstJobStart
     runTill = ( lastJobStart - firstJobStart ) * 2 + firstJobStart
     while theTime < runTill:
         for theSite in Site.Site.sites.values():
-             theSite.pollSite( theTime )
-             print "%s %d" % ( theSite.name, theSite.batch.numberOfJobs() )
+             theSite.pollSite( theTime, database )
+             if debug:
+                 print "%s %d" % ( theSite.name, theSite.batch.numberOfJobs() )
         theTime += 300
         print theTime
         if ( theTime - firstJobStart ) % 84600 == 0:
@@ -197,7 +203,6 @@ def runSimulation( theStore ):
     futureTime = 1600000000.
     for theSite in Site.Site.sites.values():
         theSite.pollSite( futureTime )
-    jobsFile.close()
 
 def printResults( theStore ):
     for site in Site.Site.sites.values():
@@ -212,14 +217,17 @@ def setupDatabase( databaseName ):
 
     cur = con.cursor()
     cur.executescript('''DROP TABLE IF EXISTS Sites;
+                         DROP TABLE IF EXISTS SitesBatch;
                          DROP TABLE IF EXISTS Jobs;''')
     cur.execute("CREATE TABLE Sites(Id INT PRIMARY KEY, Name TEXT, Disk FLOAT, Cores INT,Bandwidth FLOAT)")
+    cur.execute("CREATE TABLE SitesBatch(Site INT, Time INT, Queued INT, Running INT, Done INT)")
     cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, SimTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT )")
 
     con.commit()
     return con
 
 def main(argv=None):
+    databaseName = ":memory"
     if argv is None:
         argv = sys.argv
     try:
@@ -240,10 +248,10 @@ def main(argv=None):
         theStore = Data.EventStore()
         database = setupDatabase( databaseName )
         setupSimulation( theStore, database.cursor() )
+        (start, end ) = setupJobs( theStore, database.cursor() )
+        runSimulation( theStore, start, end, database.cursor() )
         database.commit()
         database.close()
-        sys.exit(0)
-        runSimulation( theStore )
         printResults( theStore )
     except Usage, err:
         print >>sys.stderr, err.msg
