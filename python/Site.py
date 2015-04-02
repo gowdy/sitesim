@@ -157,12 +157,19 @@ class Site:
         self.batch.startJobs( time )
         for link in self.network:
             link.checkTransfers( time )
-        self.batch.checkIfJobsFinished( time )
+            database.execute( "SELECT id FROM Sites WHERE name=?",
+                              ( link.siteTo(),) )
+            toSiteId = int( database.fetchone()[0] )
+            database.execute( "INSERT INTO Links VALUES( %d,%d,%d,%f )"
+                              % ( self.id, int( toSiteId ), time,
+                                  len( link.transfersInProgress ),
+                                  link.theUsedBandwidth() ) )
+        self.batch.checkIfJobsFinished( time, database )
         database.execute( "INSERT INTO SitesBatch VALUES( %d,%d,%d,%d,%d )"
-                          % (self.id, time,
-                             self.batch.numberOfQueuedJobs(),
-                             self.batch.numberOfRunningJobs(),
-                             self.batch.numberOfDoneJobs() ) )
+                          % ( self.id, time,
+                              self.batch.numberOfQueuedJobs(),
+                              self.batch.numberOfRunningJobs(),
+                              self.batch.numberOfDoneJobs() ) )
 
     def jobSummary( self ):
         print "Jobs: %d queued %d running (%d max) %d done" % \
@@ -195,7 +202,7 @@ class Batch:
             self.qJobs = self.qJobs[ ( self.cores - runningJobs ) : ]
         return
 
-    def checkIfJobsFinished( self, timeNow ):
+    def checkIfJobsFinished( self, timeNow, database ):
         if len( self.rJobs ) > self.maxRunningJobs:
             self.maxRunningJobs = len( self.rJobs )
         tempList = [ job for job in self.rJobs if job.endTime < timeNow ]

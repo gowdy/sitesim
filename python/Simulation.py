@@ -185,11 +185,12 @@ def setupJobs( theStore, database ):
     jobsFile.close()
     return ( firstJobStart, lastJobStart )
 
-def runSimulation( theStore, firstJobStart, lastJobStart, database ):
+def runSimulation( theStore, eventLimit, events,
+                   firstJobStart, lastJobStart, database ):
     # run from start for double time recorded for jobs
     theTime = firstJobStart
     runTill = ( lastJobStart - firstJobStart ) * 2 + firstJobStart
-    while theTime < runTill:
+    while theTime < runTill and ( not eventLimit or events > 0 ):
         for theSite in Site.Site.sites.values():
              theSite.pollSite( theTime, database )
              if debug:
@@ -198,6 +199,8 @@ def runSimulation( theStore, firstJobStart, lastJobStart, database ):
         print theTime
         if ( theTime - firstJobStart ) % 84600 == 0:
             print "Simulated %d days." % ( ( theTime - firstJobStart ) / 84600 )
+        if eventLimit:
+            events-=1
 
     # all jobs done, get sites to finish jobs
     futureTime = 1600000000.
@@ -218,9 +221,11 @@ def setupDatabase( databaseName ):
     cur = con.cursor()
     cur.executescript('''DROP TABLE IF EXISTS Sites;
                          DROP TABLE IF EXISTS SitesBatch;
+                         DROP TABLE IF EXISTS Links;
                          DROP TABLE IF EXISTS Jobs;''')
     cur.execute("CREATE TABLE Sites(Id INT PRIMARY KEY, Name TEXT, Disk FLOAT, Cores INT,Bandwidth FLOAT)")
     cur.execute("CREATE TABLE SitesBatch(Site INT, Time INT, Queued INT, Running INT, Done INT)")
+    cur.execute("CREATE TABLE Links(FromSite INT, ToSite INT, Time INT, Transfers INT, BandwidthUsed FLOAT)")
     cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, SimTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT )")
 
     con.commit()
@@ -228,12 +233,14 @@ def setupDatabase( databaseName ):
 
 def main(argv=None):
     databaseName = ":memory"
+    eventsToProcess = None
+    eventLimit = False
     if argv is None:
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt( argv[1:], "hd",
-                                        ["help","debug","output="])
+            opts, args = getopt.getopt( argv[1:], "hdo:n:",
+                                        ["help","debug","output=","number="])
         except getopt.error, msg:
              raise Usage(msg)
         # process options
@@ -243,13 +250,17 @@ def main(argv=None):
                 sys.exit(0)
             if o in ("-d", "--debug"):
                 debug = True
-            if o in ("--output"):
+            if o in ("-o","--output"):
                 databaseName = a
+            if o in ("-n","--number"):
+                eventLimit = True
+                eventsToProcess = int(a)
         theStore = Data.EventStore()
         database = setupDatabase( databaseName )
         setupSimulation( theStore, database.cursor() )
         (start, end ) = setupJobs( theStore, database.cursor() )
-        runSimulation( theStore, start, end, database.cursor() )
+        runSimulation( theStore, eventLimit, eventsToProcess,
+                       start, end, database.cursor() )
         database.commit()
         database.close()
         printResults( theStore )
