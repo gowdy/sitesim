@@ -226,7 +226,7 @@ def setupDatabase( databaseName ):
     cur.execute("CREATE TABLE Sites(Id INT PRIMARY KEY, Name TEXT, Disk FLOAT, Cores INT,Bandwidth FLOAT)")
     cur.execute("CREATE TABLE SitesBatch(Site INT, Time INT, Queued INT, Running INT, Done INT)")
     cur.execute("CREATE TABLE Links(FromSite INT, ToSite INT, Time INT, Transfers INT, BandwidthUsed FLOAT)")
-    cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, SimTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT )")
+    cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, RunTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT )")
 
     con.commit()
     return con

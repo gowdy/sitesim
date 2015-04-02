@@ -208,6 +208,17 @@ class Batch:
         tempList = [ job for job in self.rJobs if job.endTime < timeNow ]
         for job in tempList:
             self.endJob( job )
+            database.execute('''UPDATE Jobs
+                                SET Start=?,
+                                    End=?,
+                                    DataTran=?,
+                                    CPUHit=?
+                                WHERE Id=?''',
+                             ( job.startTime,
+                               job.endTime,
+                               job.dataReadyTime,
+                               job.dataReadCPUHit,
+                               job.jobID ) )
 
     def addJob( self, job ):
         self.qJobs.append( job )
