@@ -160,10 +160,10 @@ class Site:
             database.execute( "SELECT id FROM Sites WHERE name=?",
                               ( link.siteTo(),) )
             toSiteId = int( database.fetchone()[0] )
-            database.execute( "INSERT INTO Links VALUES( %d,%d,%d,%f )"
-                              % ( self.id, int( toSiteId ), time,
-                                  len( link.transfersInProgress ),
-                                  link.theUsedBandwidth() ) )
+            database.execute( "INSERT INTO Links VALUES( ?,?,?,?,? )",
+                              ( self.id, int( toSiteId ), time,
+                                len( link.transfersInProgress ),
+                                link.theUsedBandwidth() ) )
         self.batch.checkIfJobsFinished( time, database )
         database.execute( "INSERT INTO SitesBatch VALUES( %d,%d,%d,%d,%d )"
                           % ( self.id, time,
