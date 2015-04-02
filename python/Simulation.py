@@ -202,7 +202,7 @@ def runSimulation( theStore, firstJobStart, lastJobStart, database ):
     # all jobs done, get sites to finish jobs
     futureTime = 1600000000.
     for theSite in Site.Site.sites.values():
-        theSite.pollSite( futureTime )
+        theSite.pollSite( futureTime, database )
 
 def printResults( theStore ):
     for site in Site.Site.sites.values():
