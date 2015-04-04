@@ -117,7 +117,7 @@ class EventStore:
                         # fileSize in MB,  bandwidth in MB/s
                         linkLatency = link.theLatency()
                         maxRateForLink = EventStore.fileTransfer.lookup( linkLatency )
-                        actualSpeed = max( link.theBandwidth(), maxRateForLink )
+                        actualSpeed = min( link.theBandwidth(), maxRateForLink )
                         tTime = float(fileSize) / float( actualSpeed )
                         # add any time needed to retry transfer
                         tTime += timeForRetries( tTime, link.theQuality() )
