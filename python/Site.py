@@ -8,6 +8,7 @@
 
 import Data
 import Simulation
+import sys
 
 class Link:
     """A class that represents the network link between sites"""
