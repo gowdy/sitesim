@@ -113,7 +113,7 @@ class Link:
                     transfer.dump()
                 self.usedBandwidth -= transfer.bandwidth()
                 someTransfersEndded = True
-                if self.usedBandiwdth < 0:
+                if self.usedBandwidth < 0:
                     print "Used bandwidth less than zero!"
                     transfer.dump()
                     sys.exit(1)
