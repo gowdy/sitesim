@@ -114,10 +114,15 @@ class Link:
                     transfer.dump()
                 self.usedBandwidth -= transfer.bandwidth()
                 someTransfersEndded = True
+
                 if self.usedBandwidth < 0:
-                    print "Used bandwidth less than zero!"
-                    transfer.dump()
-                    sys.exit(1)
+                    if self.usedBandwidth > -1:
+                        # rounding error pushes it below zero sometimes
+                        self.usedBandwidth = 0
+                    else:
+                        print "Used bandwidth less than zero!"
+                        transfer.dump()
+                        sys.exit(1)
         if self.usedBandwidth > self.bandwidth:
             self.slowDownTransfers( time )
         if someTransfersEndded:
