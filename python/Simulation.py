@@ -3,6 +3,15 @@
 
 Main simulation control code
 
+Options:
+ -n,--number #######
+      number of cycles to process
+ -j,--jobs ########
+      number of jobs to process
+ -o,--output <file>.sql3
+      sqlite file to write output to
+ -h,--help
+      This help message
 """
 
 
@@ -146,13 +155,16 @@ def addNetwork( siteDict, fromSite, toSite, bandwidth, quality, latency ):
     siteDict[fromSite].addLink( toSite, bandwidth, quality, latency )
     #siteDict[toSite].addLink( fromSite, bandwidth, quality, latency )
 
-def setupJobs( theStore, database ):
+def setupJobs( theStore, database, jobLimit, jobsToDo ):
     firstJobStart = 0
     lastJobStart = 0
     jobsFile = open( "input/Jobs.txt", 'r' )
-    numberOfLines = len( jobsFile.readlines() )
+    if jobLimit:
+        numberOfLines = jobsToDo
+    else:
+        numberOfLines = len( jobsFile.readlines() )
+        jobsFile.seek( 0 )
     print "About to read and simulate %d jobs..." % numberOfLines
-    jobsFile.seek( 0 )
     # figure out when to start and end the simulation
     jobIndex=0
     for line in jobsFile:
@@ -163,6 +175,8 @@ def setupJobs( theStore, database ):
             firstJobStart = int( line.split()[1] )
         if jobIndex == numberOfLines:
             lastJobStart = int( line.split()[1] )
+        if jobLimit and jobsToDo == jobIndex:
+            break
     jobsFile.seek( 0 )
     for line in jobsFile:
         if line[0]=='#':
@@ -182,6 +196,8 @@ def setupJobs( theStore, database ):
                               theJob.theRunTime(), 0, 0, 0., 0. ) )
         if theJob.jobID%100==0:
             print "Added %d jobs." % theJob.jobID
+        if jobLimit and jobsToDo == theJob.jobID:
+            break
     jobsFile.close()
     return ( firstJobStart, lastJobStart )
 
@@ -235,12 +251,15 @@ def main(argv=None):
     databaseName = ":memory"
     eventsToProcess = None
     eventLimit = False
+    jobsToProcess = None
+    jobLimit = False
     if argv is None:
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt( argv[1:], "hdo:n:",
-                                        ["help","debug","output=","number="])
+            opts, args = getopt.getopt( argv[1:], "hdo:n:j:",
+                                        ["help","debug","output=",
+                                         "number=","jobs="])
         except getopt.error, msg:
              raise Usage(msg)
         # process options
@@ -255,10 +274,14 @@ def main(argv=None):
             if o in ("-n","--number"):
                 eventLimit = True
                 eventsToProcess = int(a)
+            if o in ("-j","--jobs"):
+                jobLimit = True
+                jobsToProcess = int(a)
         theStore = Data.EventStore()
         database = setupDatabase( databaseName )
         setupSimulation( theStore, database.cursor() )
-        (start, end ) = setupJobs( theStore, database.cursor() )
+        (start, end ) = setupJobs( theStore, database.cursor(),
+                                   jobLimit, jobsToProcess )
         runSimulation( theStore, eventLimit, eventsToProcess,
                        start, end, database.cursor() )
         database.commit()
