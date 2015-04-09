@@ -238,10 +238,11 @@ def setupDatabase( databaseName ):
     cur.executescript('''DROP TABLE IF EXISTS Sites;
                          DROP TABLE IF EXISTS SitesBatch;
                          DROP TABLE IF EXISTS Links;
+                         DROP TABLE IF EXISTS Transfers;
                          DROP TABLE IF EXISTS Jobs;''')
     cur.execute("CREATE TABLE Sites(Id INT PRIMARY KEY, Name TEXT, Disk FLOAT, Cores INT,Bandwidth FLOAT)")
     cur.execute("CREATE TABLE SitesBatch(Site INT, Time INT, Queued INT, Running INT, Done INT, FOREIGN KEY(Site) REFERENCES Sites(Id) )")
-    cur.execute("CREATE TABLE Links(FromSite INT, ToSite INT, Time INT, Transfers INT, BandwidthUsed FLOAT, FOREIGN KEY(FromSite) REFERENCES Sites(Id), FOREIGN KEY(ToSite) REFERENCES Sites(Id) )")
+    cur.execute("CREATE TABLE Transfers(FromSite INT, ToSite INT, Time INT, Transfers INT, BandwidthUsed FLOAT, FOREIGN KEY(FromSite) REFERENCES Sites(Id), FOREIGN KEY(ToSite) REFERENCES Sites(Id) )")
     cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, RunTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT, FOREIGN KEY(Site) REFERENCES Sites(Id) )")
 
     con.commit()

@@ -170,7 +170,7 @@ class Site:
             database.execute( "SELECT id FROM Sites WHERE name=?",
                               ( link.siteTo(),) )
             toSiteId = int( database.fetchone()[0] )
-            database.execute( "INSERT INTO Links VALUES( ?,?,?,?,? )",
+            database.execute( "INSERT INTO Transfers VALUES( ?,?,?,?,? )",
                               ( self.id, int( toSiteId ), time,
                                 len( link.transfersInProgress ),
                                 link.theUsedBandwidth() ) )
