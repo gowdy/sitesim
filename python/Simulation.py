@@ -63,8 +63,12 @@ def setupSimulation( theStore, database ):
         if line[0]=='#':
             continue
         ( fromSite, toSite, bandwidth, quality, latency ) = line.split()
-        addNetwork( Site.Site.sites, fromSite, toSite,
+        addNetwork( Site.Site.sites, links, fromSite, toSite,
                     float(bandwidth), float(quality), float(latency) )
+        database.execute( "INSERT INTO Links VALUES(?,?,?,?,?,?)",
+                          ( links, Site.Site.sites[fromSite].id,
+                            Site.Site.sites[toSite].id,
+                            bandwidth, quality, latency ) )
         links+=1
     print "Read in %d network links." % links
     networkFile.close()
@@ -151,8 +155,8 @@ def setupJobEffMC():
     jobFile.close()
 
 
-def addNetwork( siteDict, fromSite, toSite, bandwidth, quality, latency ):
-    siteDict[fromSite].addLink( toSite, bandwidth, quality, latency )
+def addNetwork( siteDict, id, fromSite, toSite, bandwidth, quality, latency ):
+    siteDict[fromSite].addLink( id, toSite, bandwidth, quality, latency )
     #siteDict[toSite].addLink( fromSite, bandwidth, quality, latency )
 
 def setupJobs( theStore, database, jobLimit, jobsToDo ):
@@ -242,7 +246,8 @@ def setupDatabase( databaseName ):
                          DROP TABLE IF EXISTS Jobs;''')
     cur.execute("CREATE TABLE Sites(Id INT PRIMARY KEY, Name TEXT, Disk FLOAT, Cores INT,Bandwidth FLOAT)")
     cur.execute("CREATE TABLE SitesBatch(Site INT, Time INT, Queued INT, Running INT, Done INT, FOREIGN KEY(Site) REFERENCES Sites(Id) )")
-    cur.execute("CREATE TABLE Transfers(FromSite INT, ToSite INT, Time INT, Transfers INT, BandwidthUsed FLOAT, FOREIGN KEY(FromSite) REFERENCES Sites(Id), FOREIGN KEY(ToSite) REFERENCES Sites(Id) )")
+    cur.execute("CREATE TABLE Links(Id INT PRIMARY KEY, FromSite INT, ToSite INT, Bandwidth INT, Quality FLOAT, Latency INT, FOREIGN KEY(FromSite) REFERENCES Sites(Id), FOREIGN KEY(ToSite) REFERENCES Sites(Id) )")
+    cur.execute("CREATE TABLE Transfers(LinkId INT, Time INT, Transfers INT, BandwidthUsed FLOAT, FOREIGN KEY(LinkId) REFERENCES Links(Id) )")
     cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, RunTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT, FOREIGN KEY(Site) REFERENCES Sites(Id) )")
 
     con.commit()

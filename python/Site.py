@@ -12,11 +12,12 @@ import sys
 
 class Link:
     """A class that represents the network link between sites"""
-    def __init__( self, siteA, siteB, bandwidth, quality, latency ):
+    def __init__( self, id, siteA, siteB, bandwidth, quality, latency ):
+        self.id = id
         self.siteA = siteA
         self.siteB = siteB
         self.bandwidth = bandwidth
-        self.usedBandwidth = 0
+        #TF self.usedBandwidth = 0
         self.quality = quality
         self.latency = latency
         self.transfersInProgress = []
@@ -26,8 +27,9 @@ class Link:
 
 
     def dump( self ):
-        print "Link: From %s to %s. %dMB/s (max used %dMB/s). Latency %dms. Quality %f. %d transfers started." \
-            % ( self.siteA, self.siteB, self.bandwidth, self.maxBandwidthUsed,
+        print "Link: From %s to %s. %dMB/s (current %dMB/s max used %dMB/s). Latency %dms. Quality %f. %d transfers started." \
+            % ( self.siteA, self.siteB, self.bandwidth,
+                self.theUsedBandwidth(), self.maxBandwidthUsed,
                 self.latency, self.quality, self.transfersStarted )
     def siteFrom( self ):
         return self.siteA
@@ -36,7 +38,10 @@ class Link:
     def theBandwidth( self ):
         return self.bandwidth
     def theUsedBandwidth( self ):
-        return self.usedBandwidth
+        total = 0
+        for transfer in self.transfersInProgress:
+            total += transfer.bandwidth()
+        return total
     def theQuality( self ):
         return self.quality
     def theLatency( self ):
@@ -44,9 +49,9 @@ class Link:
     def addTransfer( self, transfer, time ):
         self.transfersInProgress.append( transfer )
         self.transfersStarted += 1
-        self.usedBandwidth += transfer.bandwidth()
-        if self.usedBandwidth > self.maxBandwidthUsed:
-            self.maxBandwidthUsed = self.usedBandwidth
+        #TF self.usedBandwidth += transfer.bandwidth()
+        if self.theUsedBandwidth() > self.maxBandwidthUsed:
+            self.maxBandwidthUsed = self.theUsedBandwidth()
             self.stillToSlowDown = True
 
     def slowDownTransfers( self, time ):
@@ -82,9 +87,10 @@ class Link:
                 transfer.updateRate( newBandwidthAll, time )
             elif transfer.typeT() == Data.Transfer.moveFile:
                 transfer.updateRate( newBandwidth, time )
-        self.usedBandwidth = self.bandwidth
-        if self.usedBandwidth > self.maxBandwidthUsed or self.stillToSlowDown:
-            self.maxBandwidthUsed = self.usedBandwidth
+        #TF self.usedBandwidth = self.bandwidth
+        if self.theUsedBandwidth() > self.maxBandwidthUsed or \
+           self.stillToSlowDown:
+            self.maxBandwidthUsed = self.theUsedBandwidth()
             self.stillToSlowDown = False
 
     def tryToSpeedUpTransfers( self, time ):
@@ -95,8 +101,8 @@ class Link:
             maxBandwidth = transfer.maxBandwidth()
             if usedBandwidth < maxBandwidth:
                 transfer.updateRate( maxBandwidth, time )
-                self.usedBandwidth += maxBandwidth - usedBandwidth
-        if self.usedBandwidth > self.bandwidth:
+                #TF self.usedBandwidth += maxBandwidth - usedBandwidth
+        if self.theUsedBandwidth() > self.bandwidth:
             self.slowDownTransfers( time )
 
     def checkTransfers( self, time ):
@@ -112,18 +118,19 @@ class Link:
                 if Simulation.debug:
                     print "Removed Transfer!"
                     transfer.dump()
-                self.usedBandwidth -= transfer.bandwidth()
+                #TF self.usedBandwidth -= transfer.bandwidth()
                 someTransfersEndded = True
 
-                if self.usedBandwidth < 0:
-                    if self.usedBandwidth > -1:
-                        # rounding error pushes it below zero sometimes
-                        self.usedBandwidth = 0
-                    else:
-                        print "Used bandwidth less than zero!"
-                        transfer.dump()
-                        sys.exit(1)
-        if self.usedBandwidth > self.bandwidth:
+                #TF if self.usedBandwidth < 0:
+                #TF if self.usedBandwidth > -1:
+                #TF # rounding error pushes it below zero sometimes
+                #TF self.usedBandwidth = 0
+                #TF else:
+                #TF print "Used bandwidth less than zero!"
+                #TF transfer.dump()
+                #TF #self.usedBandwidth = 0
+                #TF sys.exit(1)
+        if self.theUsedBandwidth() > self.bandwidth:
             self.slowDownTransfers( time )
         if someTransfersEndded:
             self.tryToSpeedUpTransfers( time )
@@ -153,8 +160,8 @@ class Site:
         else:
             self.diskUsed -= size
 
-    def addLink( self, otherSite, bandwidth, quality, latency ):
-        self.network.append( Link( self.name, otherSite, bandwidth,
+    def addLink( self, id, otherSite, bandwidth, quality, latency ):
+        self.network.append( Link( id, self.name, otherSite, bandwidth,
                                    quality, latency ) )
 
     def bandwidthPerCore( self ):
@@ -167,11 +174,8 @@ class Site:
         self.batch.startJobs( time )
         for link in self.network:
             link.checkTransfers( time )
-            database.execute( "SELECT id FROM Sites WHERE name=?",
-                              ( link.siteTo(),) )
-            toSiteId = int( database.fetchone()[0] )
-            database.execute( "INSERT INTO Transfers VALUES( ?,?,?,?,? )",
-                              ( self.id, int( toSiteId ), time,
+            database.execute( "INSERT INTO Transfers VALUES( ?,?,?,? )",
+                              ( link.id, time,
                                 len( link.transfersInProgress ),
                                 link.theUsedBandwidth() ) )
         self.batch.checkIfJobsFinished( time, database )
