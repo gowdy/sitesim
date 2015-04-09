@@ -198,8 +198,8 @@ def setupJobs( theStore, database, jobLimit, jobsToDo ):
                 database.execute( "INSERT INTO Jobs VALUES(%d,%d,%f,%f,%f,%d,%d,%f,%f)"
                           % ( theJob.jobID, theSite.id, wallTime, cpuTime,
                               theJob.theRunTime(), 0, 0, 0., 0. ) )
-        if theJob.jobID%100==0:
-            print "Added %d jobs." % theJob.jobID
+        if (theJob.jobID+1)%100==0:
+            print "Added %d jobs." % (theJob.jobID+1)
         if jobLimit and jobsToDo == theJob.jobID+1:
             break
     jobsFile.close()
