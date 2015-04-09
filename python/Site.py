@@ -75,7 +75,7 @@ class Link:
                 remoteBandwidth += transfer.bandwidth()
                 if remoteMaxBandwidth < transfer.bandwidth():
                     remoteMaxBandwidth = transfer.bandwidth()
-        # work out bandwidth per transfer if only reduce copy transfers
+        # work out bandwidth per transfer if we only reduce copy transfers
         if countCopies > 0:
             newBandwidth = ( self.bandwidth - remoteBandwidth ) / countCopies
         else:
