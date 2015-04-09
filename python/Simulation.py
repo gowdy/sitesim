@@ -254,7 +254,7 @@ def setupDatabase( databaseName ):
     return con
 
 def main(argv=None):
-    databaseName = ":memory"
+    databaseName = ":memory:"
     eventsToProcess = None
     eventLimit = False
     jobsToProcess = None
