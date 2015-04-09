@@ -212,9 +212,11 @@ def runSimulation( theStore, eventLimit, events,
     runTill = ( lastJobStart - firstJobStart ) * 2 + firstJobStart
     while theTime < runTill and ( not eventLimit or events > 0 ):
         for theSite in Site.Site.sites.values():
-             theSite.pollSite( theTime, database )
-             if debug:
-                 print "%s %d" % ( theSite.name, theSite.batch.numberOfJobs() )
+            theSite.batch.startJobs( theTime )
+        for theSite in Site.Site.sites.values():
+            theSite.pollSite( theTime, database )
+            if debug:
+                print "%s %d" % ( theSite.name, theSite.batch.numberOfJobs() )
         theTime += 300
         print theTime
         if ( theTime - firstJobStart ) % 84600 == 0:
