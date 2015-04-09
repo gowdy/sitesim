@@ -196,7 +196,7 @@ def setupJobs( theStore, database, jobLimit, jobsToDo ):
                               theJob.theRunTime(), 0, 0, 0., 0. ) )
         if theJob.jobID%100==0:
             print "Added %d jobs." % theJob.jobID
-        if jobLimit and jobsToDo == theJob.jobID:
+        if jobLimit and jobsToDo == theJob.jobID+1:
             break
     jobsFile.close()
     return ( firstJobStart, lastJobStart )
