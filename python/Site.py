@@ -64,6 +64,7 @@ class Link:
         remoteMaxBandwidth = 0
         copyBandwidth = 0
         remoteBandwidth = 0
+
         for transfer in self.transfersInProgress:
             if transfer.typeT() == Data.Transfer.moveFile:
                 countCopies += 1
@@ -171,7 +172,6 @@ class Site:
         return self.batch.addJob( job )
 
     def pollSite( self, time, database ):
-        self.batch.startJobs( time )
         for link in self.network:
             link.checkTransfers( time )
             database.execute( "INSERT INTO Transfers VALUES( ?,?,?,? )",
