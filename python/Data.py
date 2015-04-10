@@ -201,8 +201,9 @@ class Transfer:
         # due to quantisation of time need to check to see if it is already
         # done or not...
         if self.transferDone >= self.size:
-            return
-        newEnd = time + ( self.size - self.transferDone ) / newSpeed
+            newEnd = time
+        else:
+            newEnd = time + ( self.size - self.transferDone ) / newSpeed
         delay = newEnd - self.end
         if newEnd < self.start:
             print "New end time is before existing start time!"
