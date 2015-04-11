@@ -1,5 +1,9 @@
 set terminal png notransparent medium nocrop enhanced size 1280,960 font arial 24
 set output 'serialData.png'
+set lmargin 25
+set rmargin 10
+set tmargin 6
+set bmargin 8
 set title "Network out of FNAL when data transferred from FNAL"
 set title font "*,24"
 set xlabel "hours"
