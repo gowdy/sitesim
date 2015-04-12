@@ -18,3 +18,4 @@ sqlite3 today.sqlite "select (start-1423531206)/3600.,start,end,cpu,(cpu/(end-st
 
 sqlite3 today.sqlite "select (time-1423531206)/3600.,SUM(QUEUED),SUM(RUNNING),SUM(DONE) from SitesBatch group by time;" | sed 's/|/ /g' > todayCPU.txt
 
+sqlite3 today.sqlite "select (time-1423531206)/3600.,group_concat(SITE),group_concat(RUNNING) from SitesBatch group by time;" | sed 's/|/ /g;s/,/ /g' > todayCPUSite.txt 
