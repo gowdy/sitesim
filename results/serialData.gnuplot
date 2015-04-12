@@ -30,11 +30,14 @@ set style line 2 linetype 2 linecolor rgb "#10ad1d"   linewidth 3.000 pointtype 
 set style line 3 linetype 2 linecolor rgb "red"    linewidth 3.000 pointtype 3 pointsize 0.1
 set style line 4 linetype 2 linecolor rgb "#3323ad"   linewidth 3.000 pointtype 3 pointsize 0.1
 set style line 5 linetype 2 linecolor rgb "purple" linewidth 3.000 pointtype 3 pointsize 0.1
+set style line 6 linetype 2 linecolor rgb "green" linewidth 3.000 pointtype 3 pointsize 0.1
+set style line 7 linetype 2 linecolor rgb "blue" linewidth 3.000 pointtype 3 pointsize 0.1
+set style line 8 linetype 2 linecolor rgb "orange" linewidth 3.000 pointtype 3 pointsize 0.1
 set style fill solid
 plot \
-'serialData.txt' using 1:($11+$12+$13+$14+$15+$16+$17+$18) with filledcurves x1 ls 2 title 'Wisconsin', \
-'serialData.txt' using 1:($11+$12+$13+$14+$15+$16+$17) with filledcurves x1 ls 3 title 'Vanderbilt', \
-'serialData.txt' using 1:($11+$12+$13+$14+$15+$16) with filledcurves x1 ls 4 title 'Purdue', \
+'serialData.txt' using 1:($11+$12+$13+$14+$15+$16+$17+$18) with filledcurves x1 ls 8 title 'Wisconsin', \
+'serialData.txt' using 1:($11+$12+$13+$14+$15+$16+$17) with filledcurves x1 ls 7 title 'Vanderbilt', \
+'serialData.txt' using 1:($11+$12+$13+$14+$15+$16) with filledcurves x1 ls 6 title 'Purdue', \
 'serialData.txt' using 1:($11+$12+$13+$14+$15) with filledcurves x1 ls 5 title 'Florida', \
 'serialData.txt' using 1:($11+$12+$13+$14) with filledcurves x1 ls 1 title 'MIT', \
 'serialData.txt' using 1:($11+$12+$13) with filledcurves x1 ls 2 title 'Nebraska', \
