@@ -24,13 +24,15 @@ class Link:
         self.maxBandwidthUsed = 0
         self.stillToSlowDown = False
         self.transfersStarted = 0
+        self.MBsTransferred = 0
 
 
     def dump( self ):
-        print "Link: From %s to %s. %dMB/s (current %dMB/s max used %dMB/s). Latency %dms. Quality %f. %d transfers started." \
+        print "Link: From %s to %s. %dMB/s (current %dMB/s max used %dMB/s). Latency %dms. Quality %f. %d transfers started. %dMB transferred" \
             % ( self.siteA, self.siteB, self.bandwidth,
                 self.theUsedBandwidth(), self.maxBandwidthUsed,
-                self.latency, self.quality, self.transfersStarted )
+                self.latency, self.quality, self.transfersStarted,
+                self.MBsTransferred )
     def siteFrom( self ):
         return self.siteA
     def siteTo( self ):
@@ -49,6 +51,7 @@ class Link:
     def addTransfer( self, transfer, time ):
         self.transfersInProgress.append( transfer )
         self.transfersStarted += 1
+        self.MBsTransferred += transfer.size
         #TF self.usedBandwidth += transfer.bandwidth()
         if self.theUsedBandwidth() > self.maxBandwidthUsed:
             self.maxBandwidthUsed = self.theUsedBandwidth()
