@@ -111,6 +111,7 @@ class Link:
 
     def checkTransfers( self, time ):
         someTransfersEndded = False
+        doneData = 0
         for transfer in self.transfersInProgress:
             if Simulation.debug:
                 print "Transfer: %d ( %d - %d ) %s" % \
@@ -118,6 +119,7 @@ class Link:
                       transfer.start, transfer.end,
                       transfer.lfn )
             if transfer.done( time ):
+                doneData+=transfer.size
                 self.transfersInProgress.remove( transfer )
                 if Simulation.debug:
                     print "Removed Transfer!"
@@ -138,6 +140,7 @@ class Link:
             self.slowDownTransfers( time )
         if someTransfersEndded:
             self.tryToSpeedUpTransfers( time )
+        return doneData
 
 class Site:
     """A representation of a Site"""
@@ -176,11 +179,11 @@ class Site:
 
     def pollSite( self, time, database ):
         for link in self.network:
-            link.checkTransfers( time )
-            database.execute( "INSERT INTO Transfers VALUES( ?,?,?,? )",
+            doneData = link.checkTransfers( time )
+            database.execute( "INSERT INTO Transfers VALUES( ?,?,?,?,? )",
                               ( link.id, time,
                                 len( link.transfersInProgress ),
-                                link.theUsedBandwidth() ) )
+                                link.theUsedBandwidth(), doneData ) )
         self.batch.checkIfJobsFinished( time, database )
         database.execute( "INSERT INTO SitesBatch VALUES( %d,%d,%d,%d,%d )"
                           % ( self.id, time,

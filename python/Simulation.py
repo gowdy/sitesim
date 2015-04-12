@@ -217,7 +217,7 @@ def runSimulation( theStore, eventLimit, events,
             theSite.pollSite( theTime, database )
             if debug:
                 print "%s %d" % ( theSite.name, theSite.batch.numberOfJobs() )
-        theTime += 300
+        theTime += 100
         print theTime
         if ( theTime - firstJobStart ) % 84600 == 0:
             print "Simulated %d days." % ( ( theTime - firstJobStart ) / 84600 )
@@ -254,7 +254,7 @@ def setupDatabase( databaseName ):
     cur.execute("CREATE TABLE Sites(Id INT PRIMARY KEY, Name TEXT, Disk FLOAT, Cores INT,Bandwidth FLOAT)")
     cur.execute("CREATE TABLE SitesBatch(Site INT, Time INT, Queued INT, Running INT, Done INT, FOREIGN KEY(Site) REFERENCES Sites(Id) )")
     cur.execute("CREATE TABLE Links(Id INT PRIMARY KEY, FromSite INT, ToSite INT, Bandwidth INT, Quality FLOAT, Latency INT, FOREIGN KEY(FromSite) REFERENCES Sites(Id), FOREIGN KEY(ToSite) REFERENCES Sites(Id) )")
-    cur.execute("CREATE TABLE Transfers(LinkId INT, Time INT, Transfers INT, BandwidthUsed FLOAT, FOREIGN KEY(LinkId) REFERENCES Links(Id) )")
+    cur.execute("CREATE TABLE Transfers(LinkId INT, Time INT, Transfers INT, BandwidthUsed FLOAT, DoneData INT, FOREIGN KEY(LinkId) REFERENCES Links(Id) )")
     cur.execute("CREATE TABLE Jobs(Id INT PRIMARY KEY, Site INT, Wall FLOAT, Cpu FLOAT, RunTime FLOAT, Start INT, End INT, DataTran FLOAT, CPUHit FLOAT, FOREIGN KEY(Site) REFERENCES Sites(Id) )")
 
     con.commit()
