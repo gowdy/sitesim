@@ -36,7 +36,7 @@ binwidth=1
 bin(x,width)=width*floor(x/width)
 f(y) = mean_x
 fit f(y) 'dataAtFNALCPUEff.txt' u 5:5 via mean_x
-set label 1 gprintf("Average: %2.1f%%", mean_x) at 40,10000 font "*,20"
+set label 1 gprintf("Average: %2.1f%%", mean_x) at 1,14200 font "*,30"
 
 plot \
 'dataAtFNALCPUEff.txt' using (bin($5,binwidth)):(1.0) smooth freq with boxes ls 4
