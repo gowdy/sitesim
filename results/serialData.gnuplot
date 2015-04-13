@@ -4,7 +4,7 @@ set lmargin 25
 set rmargin 10
 set tmargin 6
 set bmargin 8
-set title "Network out of FNAL when data transferred from FNAL"
+set title "Network of FNAL when data transferred from FNAL"
 set title font "*,24"
 set xlabel "hours"
 set xlabel font "*,24"
@@ -14,7 +14,7 @@ set ylabel font "*,24"
 set ylabel offset -10.
 #set origin -0.1,0
 set xrange [0:100]
-set yrange [0:40000]
+set yrange [0:50000]
 #set xtics out border nomirror rotate by -45 offset character 0,-0.2,0
 set xtics out border nomirror rotate by -45 offset character -0.2,0,0
 set xtics font "*,24"
