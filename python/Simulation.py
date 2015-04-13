@@ -8,7 +8,7 @@ Options:
       number of cycles to process
  -j,--jobs ########
       number of jobs to process
- -o,--output <file>.sql3
+ -o,--output <file>
       sqlite file to write output to
  -h,--help
       This help message
