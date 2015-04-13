@@ -14,7 +14,7 @@ set ylabel font "*,24"
 set ylabel offset -10.
 #set origin -0.1,0
 set xrange [0:100]
-set yrange [0:11000]
+set yrange [0:40000]
 #set xtics out border nomirror rotate by -45 offset character 0,-0.2,0
 set xtics out border nomirror rotate by -45 offset character -0.2,0,0
 set xtics font "*,24"
@@ -34,8 +34,8 @@ set style line 6 linetype 2 linecolor rgb "green" linewidth 3.000 pointtype 3 po
 set style line 7 linetype 2 linecolor rgb "blue" linewidth 3.000 pointtype 3 pointsize 0.1
 set style line 8 linetype 2 linecolor rgb "orange" linewidth 3.000 pointtype 3 pointsize 0.1
 set style fill solid
-set label 1 at 65,1000 "Florida,MIT,UCSD,Wiscosin" font "*,15"
-set label 2 at 50,10000 "Caltech,Nebraska,\nPurdue,Vanderbilt" font "*,15"
+#set label 1 at 65,1000 "Florida,MIT,UCSD,Wiscosin" font "*,15"
+#set label 2 at 50,10000 "Caltech,Nebraska,\nPurdue,Vanderbilt" font "*,15"
 plot \
 'dataAtFNALData.txt' using 1:($18) with linespoints ls 8 title 'Wisconsin', \
 'dataAtFNALData.txt' using 1:($17) with linespoints ls 7 title 'Vanderbilt', \
