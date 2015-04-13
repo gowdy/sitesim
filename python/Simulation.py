@@ -236,7 +236,7 @@ def printResults( theStore ):
             link.dump()
         print "%fTB of %fTB used." % ( site.diskUsed, site.disk )
         site.jobSummary()
-        if site.name=="T1_US_FNAL":
+        if debug and site.name=="T1_US_FNAL":
             print "FNAL EventStore contents"
             for (lfn, sites) in theStore.catalogue.iteritems():
                 if "T1_US_FNAL" in sites:
