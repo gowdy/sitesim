@@ -22,7 +22,7 @@ sqlite3 today.sqlite "select (time-1423531206)/3600.,group_concat(SITE),group_co
 
 # changed first one to use actually done transfers instead
 
-sqlite3 today100.sqlite "select (time-1423531206)/3600.,SUM(DoneData/100),group_concat(s.name),group_concat(DoneData/100)
+sqlite3 today100.sqlite "select (time-1423531206)/3600.,SUM(DoneData/100),group_concat(s.name),group_concat(DoneData/100),group_concat(BandwidthUsed)
 from Transfers t
 left join Links l on (t.[LinkId] == l.[Id])
 left join Sites s on (s.[Id] == l.[ToSite])
