@@ -14,7 +14,7 @@ set ylabel font "*,24"
 set ylabel offset -10.
 #set origin -0.1,0
 set xrange [0:100]
-set yrange [0:4000]
+set yrange [0:15000]
 #set xtics out border nomirror rotate by -45 offset character 0,-0.2,0
 set xtics out border nomirror rotate by -45 offset character -0.2,0,0
 set xtics font "*,24"
