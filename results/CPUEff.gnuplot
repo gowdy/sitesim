@@ -1,11 +1,21 @@
 set terminal png notransparent medium nocrop enhanced size 1280,960 font arial 24
-set output 'todayCPUEff.png'
+set output basename.'.png'
 set lmargin 25
 set rmargin 10
 set tmargin 6
 set bmargin 8
-set title "CPU Efficiency when data placed at sites"
 set title font "*,24"
+if (basename[0:1] eq 'T_') \
+	set title "CPU Efficiency when data placed at sites"; \
+else \
+	if (basename[0:1] eq'F_') \
+		set title "CPU Efficiency when data read from FNAL"; \
+	else \
+		if (basename[0:1] eq 'S_') \
+			set title "CPU Efficiency when data transferred"; \
+		else \
+			print( "Unexpected basename: %s",basename ); \
+
 set xlabel "CPU Efficiency"
 set xlabel font "*,24"
 set xlabel offset 0,-3.
@@ -35,9 +45,9 @@ set style fill solid
 binwidth=1
 bin(x,width)=width*floor(x/width)
 f(y) = mean_x
-fit f(y) 'todayCPUEff.txt' u 5:5 via mean_x
+fit f(y) basename.'CPUEff.txt' u 5:5 via mean_x
 set label 1 gprintf("Average: %2.1f%%", mean_x) at 1,14200 font "*,30"
 
 plot \
-'todayCPUEff.txt' using (bin($5,binwidth)):(1.0) smooth freq with boxes ls 4
+basename.'CPUEff.txt' using (bin($5,binwidth)):(1.0) smooth freq with boxes ls 4
 
