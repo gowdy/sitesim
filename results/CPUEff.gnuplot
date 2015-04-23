@@ -1,5 +1,5 @@
 set terminal png notransparent medium nocrop enhanced size 1280,960 font arial 24
-set output basename.'.png'
+set output basename.'CPUEff.png'
 set lmargin 25
 set rmargin 10
 set tmargin 6
