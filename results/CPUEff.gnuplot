@@ -14,7 +14,7 @@ else \
 		if (basename[0:2] eq 'S_') \
 			set title "CPU Efficiency when data transferred"; \
 		else \
-			print( "Unexpected basename: %s",basename ); \
+			print "Unexpected basename: ",basename; \
 			exit
 
 set xlabel "CPU Efficiency"
