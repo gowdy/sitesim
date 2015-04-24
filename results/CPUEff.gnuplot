@@ -5,16 +5,17 @@ set rmargin 10
 set tmargin 6
 set bmargin 8
 set title font "*,24"
-if (basename[0:1] eq 'T_') \
+if (basename[0:2] eq 'T_') \
 	set title "CPU Efficiency when data placed at sites"; \
 else \
-	if (basename[0:1] eq'F_') \
+	if (basename[0:2] eq'F_') \
 		set title "CPU Efficiency when data read from FNAL"; \
 	else \
-		if (basename[0:1] eq 'S_') \
+		if (basename[0:2] eq 'S_') \
 			set title "CPU Efficiency when data transferred"; \
 		else \
 			print( "Unexpected basename: %s",basename ); \
+			exit
 
 set xlabel "CPU Efficiency"
 set xlabel font "*,24"
