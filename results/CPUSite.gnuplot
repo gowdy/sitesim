@@ -1,10 +1,21 @@
 set terminal png notransparent medium nocrop enhanced size 1280,960 font arial 24
-set output 'todayCPUSite.png'
+set output basename.'CPUSite.png'
 set lmargin 25
 set rmargin 10
 set tmargin 6
 set bmargin 8
-set title "Job running at sites with preplaced data"
+if (basename[0:2] eq 'T_') \
+	set title "Job running at sites with preplaced data"; \
+else \
+	if (basename[0:2] eq'F_') \
+		set title "Job running with data read from FNAL"; \
+	else \
+		if (basename[0:2] eq 'S_') \
+			set title "Job running with data transferred"; \
+		else \
+			print "Unexpected basename: ",basename; \
+			exit
+
 set title font "*,24"
 set xlabel "hours"
 set xlabel font "*,24"
@@ -36,13 +47,13 @@ set style line 8 linetype 2 linecolor rgb "orange" linewidth 3.000 pointtype 3 p
 set style line 9 linetype 2 linecolor rgb "violet" linewidth 3.000 pointtype 3 pointsize 0.1
 set style fill solid
 plot \
-'todayCPUSite.txt' using 1:($11+$12+$13+$14+$15+$16+$17+$18+$19) with filledcurves x1 ls 9 title 'FNAL', \
-'todayCPUSite.txt' using 1:($11+$12+$13+$14+$15+$16+$17+$18) with filledcurves x1 ls 8 title 'MIT', \
-'todayCPUSite.txt' using 1:($11+$12+$13+$14+$15+$16+$17) with filledcurves x1 ls 7 title 'UCSD', \
-'todayCPUSite.txt' using 1:($11+$12+$13+$14+$15+$16) with filledcurves x1 ls 6 title 'Nebraska', \
-'todayCPUSite.txt' using 1:($11+$12+$13+$14+$15) with filledcurves x1 ls 5 title 'Caltech', \
-'todayCPUSite.txt' using 1:($11+$12+$13+$14) with filledcurves x1 ls 1 title 'Florida', \
-'todayCPUSite.txt' using 1:($11+$12+$13) with filledcurves x1 ls 2 title 'Caltech', \
-'todayCPUSite.txt' using 1:($11+$12) with filledcurves x1 ls 3 title 'Vanderbilt', \
-'todayCPUSite.txt' using 1:11 with filledcurves x1 ls 4 title 'Purdue'
+basename.'CPUSite.txt' using 1:($11+$12+$13+$14+$15+$16+$17+$18+$19) with filledcurves x1 ls 9 title 'FNAL', \
+basename.'CPUSite.txt' using 1:($11+$12+$13+$14+$15+$16+$17+$18) with filledcurves x1 ls 8 title 'MIT', \
+basename.'CPUSite.txt' using 1:($11+$12+$13+$14+$15+$16+$17) with filledcurves x1 ls 7 title 'UCSD', \
+basename.'CPUSite.txt' using 1:($11+$12+$13+$14+$15+$16) with filledcurves x1 ls 6 title 'Nebraska', \
+basename.'CPUSite.txt' using 1:($11+$12+$13+$14+$15) with filledcurves x1 ls 5 title 'Caltech', \
+basename.'CPUSite.txt' using 1:($11+$12+$13+$14) with filledcurves x1 ls 1 title 'Florida', \
+basename.'CPUSite.txt' using 1:($11+$12+$13) with filledcurves x1 ls 2 title 'Caltech', \
+basename.'CPUSite.txt' using 1:($11+$12) with filledcurves x1 ls 3 title 'Vanderbilt', \
+basename.'CPUSite.txt' using 1:11 with filledcurves x1 ls 4 title 'Purdue'
 
