@@ -1,10 +1,21 @@
 set terminal png notransparent medium nocrop enhanced size 1280,960 font arial 24
-set output 'todayData2.png'
+set output basename.'Data2.png'
 set lmargin 25
 set rmargin 10
 set tmargin 6
 set bmargin 8
-set title "Network out of FNAL when data preplaced at sites"
+if (basename[0:2] eq 'T_') \
+	set title "Network out of FNAL when data preplaced at sites"; \
+else \
+	if (basename[0:2] eq'F_') \
+		set title "Network out of FNAL when data read from FNAL"; \
+	else \
+		if (basename[0:2] eq 'S_') \
+			set title "Network out of FNAL when data transferred"; \
+		else \
+			print "Unexpected basename: ",basename; \
+			exit
+
 set title font "*,24"
 set xlabel "hours"
 set xlabel font "*,24"
@@ -37,12 +48,12 @@ set style fill solid
 #set label 1 at 60,1000 "Florida,MIT,UCSD,Wiscosin" font "*,15"
 #set label 2 at 50,10000 "Caltech,Nebraska,\nPurdue,Vanderbilt" font "*,15"
 plot \
-'todayData.txt' using 1:18 with linespoints ls 8 title 'Wisconsin', \
-'todayData.txt' using 1:17 with linespoints ls 7 title 'Vanderbilt', \
-'todayData.txt' using 1:16 with linespoints ls 6 title 'Purdue', \
-'todayData.txt' using 1:15 with linespoints ls 5 title 'Florida', \
-'todayData.txt' using 1:14 with linespoints ls 1 title 'MIT', \
-'todayData.txt' using 1:13 with linespoints ls 2 title 'Nebraska', \
-'todayData.txt' using 1:12 with linespoints ls 3 title 'UCSD', \
-'todayData.txt' using 1:11 with linespoints ls 4 title 'Caltech'
+basename.'Data.txt' using 1:18 with linespoints ls 8 title 'Wisconsin', \
+basename.'Data.txt' using 1:17 with linespoints ls 7 title 'Vanderbilt', \
+basename.'Data.txt' using 1:16 with linespoints ls 6 title 'Purdue', \
+basename.'Data.txt' using 1:15 with linespoints ls 5 title 'Florida', \
+basename.'Data.txt' using 1:14 with linespoints ls 1 title 'MIT', \
+basename.'Data.txt' using 1:13 with linespoints ls 2 title 'Nebraska', \
+basename.'Data.txt' using 1:12 with linespoints ls 3 title 'UCSD', \
+basename.'Data.txt' using 1:11 with linespoints ls 4 title 'Caltech'
 
