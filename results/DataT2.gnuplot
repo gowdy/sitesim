@@ -1,10 +1,21 @@
 set terminal png notransparent medium nocrop enhanced size 1280,960 font arial 24
-set output 'todayDataT2.png'
+set output basename.'DataT2.png'
 set lmargin 25
 set rmargin 10
 set tmargin 6
 set bmargin 8
-set title "Network T2<->T2 when data preplaced"
+if (basename[0:2] eq 'T_') \
+	set title "Network T2<->T2 when data preplaced at sites"; \
+else \
+	if (basename[0:2] eq'F_') \
+		set title "Network T2<->T2 when data read from FNAL"; \
+	else \
+		if (basename[0:2] eq 'S_') \
+			set title "Network T2<->T2 when data transferred"; \
+		else \
+			print "Unexpected basename: ",basename; \
+			exit
+
 set title font "*,24"
 set xlabel "hours"
 set xlabel font "*,24"
@@ -33,4 +44,4 @@ set style line 4 linetype 2 linecolor rgb "#3323ad"   linewidth 3.000 pointtype 
 set style line 5 linetype 2 linecolor rgb "purple" linewidth 3.000 pointtype 3 pointsize 0.1
 set style fill solid
 plot \
-'todayDataT2.txt' using 2 with filledcurves x1 ls 3
+basename.'DataT2.txt' using 2 with filledcurves x1 ls 3
