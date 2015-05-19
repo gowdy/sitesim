@@ -17,7 +17,6 @@ class Link:
         self.siteA = siteA
         self.siteB = siteB
         self.bandwidth = bandwidth
-        #TF self.usedBandwidth = 0
         self.quality = quality
         self.latency = latency
         self.transfersInProgress = []
@@ -52,7 +51,6 @@ class Link:
         self.transfersInProgress.append( transfer )
         self.transfersStarted += 1
         self.MBsTransferred += transfer.size
-        #TF self.usedBandwidth += transfer.bandwidth()
         if self.theUsedBandwidth() > self.maxBandwidthUsed:
             self.maxBandwidthUsed = self.theUsedBandwidth()
             self.stillToSlowDown = True
@@ -91,7 +89,6 @@ class Link:
                 transfer.updateRate( newBandwidthAll, time )
             elif transfer.typeT() == Data.Transfer.moveFile:
                 transfer.updateRate( newBandwidth, time )
-        #TF self.usedBandwidth = self.bandwidth
         if self.theUsedBandwidth() > self.maxBandwidthUsed or \
            self.stillToSlowDown:
             self.maxBandwidthUsed = self.theUsedBandwidth()
@@ -105,7 +102,6 @@ class Link:
             maxBandwidth = transfer.maxBandwidth()
             if usedBandwidth < maxBandwidth:
                 transfer.updateRate( maxBandwidth, time )
-                #TF self.usedBandwidth += maxBandwidth - usedBandwidth
         if self.theUsedBandwidth() > self.bandwidth:
             self.slowDownTransfers( time )
 
@@ -124,18 +120,8 @@ class Link:
                 if Simulation.debug:
                     print "Removed Transfer!"
                     transfer.dump()
-                #TF self.usedBandwidth -= transfer.bandwidth()
                 someTransfersEndded = True
 
-                #TF if self.usedBandwidth < 0:
-                #TF if self.usedBandwidth > -1:
-                #TF # rounding error pushes it below zero sometimes
-                #TF self.usedBandwidth = 0
-                #TF else:
-                #TF print "Used bandwidth less than zero!"
-                #TF transfer.dump()
-                #TF #self.usedBandwidth = 0
-                #TF sys.exit(1)
         if self.theUsedBandwidth() > self.bandwidth:
             self.slowDownTransfers( time )
         if someTransfersEndded:
