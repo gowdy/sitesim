@@ -128,6 +128,13 @@ class Link:
             self.tryToSpeedUpTransfers( time )
         return doneData
 
+class DataServer:
+    """Represents a data server, either for
+    local access or for remote copies/reads"""
+
+    def __init__( self ):
+        pass
+
 class Site:
     """A representation of a Site"""
     sites={} # all the sites
