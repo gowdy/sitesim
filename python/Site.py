@@ -9,6 +9,7 @@
 import Data
 import Simulation
 import sys
+from math import ceil
 
 class Link:
     """A class that represents the network link between sites"""
@@ -128,9 +129,20 @@ class Link:
             self.tryToSpeedUpTransfers( time )
         return doneData
 
+class DataServers:
+    """Represents a set of data servers"""
+
+    def __init__( self, disk ):
+        self.servers = []
+        numberNeeded = ceil( disk / Simulation.diskPerServer )
+        while numberNeeded > 0:
+            self.servers.append( DataServer() )
+            numberNeeded -=1
+
 class DataServer:
     """Represents a data server, either for
-    local access or for remote copies/reads"""
+    local access or for remote copies/reads.
+    Will start just for external reads first"""
 
     def __init__( self ):
         pass
@@ -143,6 +155,7 @@ class Site:
         self.id = id # integer
         self.name = name # string name
         self.disk = disk # size in TB
+        self.dataServers = DataServers( disk )
         self.diskUsed = 0.
         self.bandwidth = bandwidth
         self.network = []

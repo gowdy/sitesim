@@ -36,6 +36,10 @@ transferType = "Serial"
 #transferType = "Parrallel"
 # Read eventstore from pickle file
 eventStoreInPickle = True
+# TBs on each data server
+diskPerServer = 100
+# Maximum data rate per server (MB/s)
+dataRatePerServer = 300
 
 class Usage(Exception):
     def __init__(self, msg):
