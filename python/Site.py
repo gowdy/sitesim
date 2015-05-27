@@ -138,6 +138,15 @@ class DataServers:
         while numberNeeded > 0:
             self.servers.append( DataServer() )
             numberNeeded -=1
+    def addTransfer( self, transfer ):
+        # find a server that has fewest transfers and use it
+        numInProgress = 99999
+        serverToUse = None
+        for server in self.servers:
+            if server.numberOfTransfers() < numInProgress:
+                serverToUse = server
+                numInProgress = server.numberOfTransfers()
+        serverToUse.addTransfer( transfer )
 
 class DataServer:
     """Represents a data server, either for
@@ -145,7 +154,13 @@ class DataServer:
     Will start just for external reads first"""
 
     def __init__( self ):
-        pass
+        self.transfers = []
+    def numberOfTransfers( self ):
+        return len( self.transfers )
+    def addTransfer( self, transfer ):
+        self.transfers.append( transfer )
+    def removeTransfer( self, transfer ):
+        self.transfers.remove( transfer )
 
 class Site:
     """A representation of a Site"""
