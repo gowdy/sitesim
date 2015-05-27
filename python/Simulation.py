@@ -37,7 +37,7 @@ transferType = "Serial"
 # Read eventstore from pickle file
 eventStoreInPickle = True
 # TBs on each data server
-diskPerServer = 100
+diskPerServer = 200
 # Maximum data rate per server (MB/s)
 dataRatePerServer = 300
 
