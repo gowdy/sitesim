@@ -171,6 +171,10 @@ class Transfer:
         self.transferDone = 0
         self.lastChangeTime = start
         self.maxRate = self.rate
+        self.servers = []
+
+    def addServer( self, server ):
+        self.servers.append( server )
 
     def done( self, time ):
         if time > self.end:
@@ -197,6 +201,10 @@ class Transfer:
             sys.exit(1)
         if newSpeed > self.maxRate:
             newSpeed = self.maxRate
+        # FIXME: needs to get cleverer in reducing speed due to servers
+        for server in self.servers:
+            if newSpeed > server.maxRate():
+                newSpeed = server.maxRate()
         self.transferDone += ( time - self.lastChangeTime ) * self.rate
         # due to quantisation of time need to check to see if it is already
         # done or not...

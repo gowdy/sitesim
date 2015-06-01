@@ -188,8 +188,11 @@ class DataServer:
             return False
     def addTransfer( self, transfer ):
         self.transfers.append( transfer )
+        transfer.addServer( self )
     def removeTransfer( self, transfer ):
         self.transfers.remove( transfer )
+    def maxRate( self ):
+        return float(Simulation.dataRatePerServer) / len( self.transfers )
 
 class Site:
     """A representation of a Site"""
