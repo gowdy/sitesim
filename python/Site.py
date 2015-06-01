@@ -55,6 +55,9 @@ class Link:
         if self.theUsedBandwidth() > self.maxBandwidthUsed:
             self.maxBandwidthUsed = self.theUsedBandwidth()
             self.stillToSlowDown = True
+        # find each site and add the transfer to the servers
+        Site.sites[ self.siteA ].addTransfer( transfer )
+        Site.sites[ self.siteB ].addTransfer( transfer )
 
     def slowDownTransfers( self, time ):
         """ Using more bandwidth than available """
@@ -117,10 +120,7 @@ class Link:
                       transfer.lfn )
             if transfer.done( time ):
                 doneData+=transfer.size
-                self.transfersInProgress.remove( transfer )
-                if Simulation.debug:
-                    print "Removed Transfer!"
-                    transfer.dump()
+                self.removeTransfer( transfer )
                 someTransfersEndded = True
 
         if self.theUsedBandwidth() > self.bandwidth:
@@ -128,6 +128,16 @@ class Link:
         if someTransfersEndded:
             self.tryToSpeedUpTransfers( time )
         return doneData
+
+    def removeTransfer( self, transfer ):
+        self.transfersInProgress.remove( transfer )
+        if Simulation.debug:
+            print "Removed Transfer!"
+            transfer.dump()
+        # find each site and remove the transfer from the servers
+        Site.sites[ self.siteA ].removeTransfer( transfer )
+        Site.sites[ self.siteB ].removeTransfer( transfer )
+
 
 class DataServers:
     """Represents a set of data servers"""
@@ -147,6 +157,20 @@ class DataServers:
                 serverToUse = server
                 numInProgress = server.numberOfTransfers()
         serverToUse.addTransfer( transfer )
+        if Simulation.debug:
+            print "Servers have transfers:"
+            i=0
+            for server in self.servers:
+                print "%d: %d" % ( i, server.numberOfTransfers() )
+                i+=1
+    def removeTransfer( self, transfer ):
+        # remove a transfer
+        for server in self.servers:
+            if server.hasTransfer( transfer ):
+                server.removeTransfer( transfer )
+                return
+        print "Transfer not found when trying to remove from servers."
+        sys.exit( 1 )
 
 class DataServer:
     """Represents a data server, either for
@@ -157,6 +181,11 @@ class DataServer:
         self.transfers = []
     def numberOfTransfers( self ):
         return len( self.transfers )
+    def hasTransfer( self, transfer ):
+        if transfer in self.transfers:
+            return True
+        else:
+            return False
     def addTransfer( self, transfer ):
         self.transfers.append( transfer )
     def removeTransfer( self, transfer ):
@@ -175,6 +204,12 @@ class Site:
         self.bandwidth = bandwidth
         self.network = []
         self.batch = Batch( cores, bandwidth )
+
+    def addTransfer( self, transfer ):
+        self.dataServers.addTransfer( transfer )
+
+    def removeTransfer( self, transfer ):
+        self.dataServers.removeTransfer( transfer )
 
     def addFileOfSize( self, size ):
         if self.diskUsed + size > self.disk:
