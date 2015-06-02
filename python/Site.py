@@ -191,8 +191,16 @@ class DataServer:
         transfer.addServer( self )
     def removeTransfer( self, transfer ):
         self.transfers.remove( transfer )
-    def maxRate( self ):
-        return float(Simulation.dataRatePerServer) / len( self.transfers )
+    def maxRate( self, transferToUpdate, newRate ):
+        usedRate = 0
+        for transfer in self.transfers:
+            usedRate += transfer.rate
+        if usedRate - transferToUpdate.rate + newRate \
+           > Simulation.dataRatePerServer:
+            newRate = float( Simulation.dataRatePerServer ) \
+                      / len( self.transfers)
+        return newRate
+
 
 class Site:
     """A representation of a Site"""
