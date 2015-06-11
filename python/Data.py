@@ -203,7 +203,7 @@ class Transfer:
             newSpeed = self.maxRate
         # FIXME: needs to get cleverer in reducing speed due to servers
         for server in self.servers:
-            serverMax = server.maxRate( transfer, newSpeed )
+            serverMax = server.maxRate( self, newSpeed )
             if newSpeed > serverMax:
                 newSpeed = serverMax
         self.transferDone += ( time - self.lastChangeTime ) * self.rate
